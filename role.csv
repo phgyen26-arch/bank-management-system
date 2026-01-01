@@ -1,0 +1,3 @@
+﻿"{""role_id"":1,""role_name"":""Admin"",""description"":""Quản trị hệ thống""}"
+"{""role_id"":2,""role_name"":""Teller"",""description"":""Nhân viên giao dịch""}"
+"{""role_id"":3,""role_name"":""Customer"",""description"":""Khách hàng ngân hàng""}"
