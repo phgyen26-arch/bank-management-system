@@ -1,0 +1,167 @@
+/* src/css/Login.css */
+
+/* 1. Thiết lập cơ bản */
+:root, body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* 2. BACKGROUND */
+.login-container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* =========================================
+   3. HỆ THỐNG ICON (ĐÃ KHẮC PHỤC LỖI TRÙNG LẶP)
+   ========================================= */
+
+.bg-icon {
+  position: absolute;
+  font-size: 50px; 
+  pointer-events: none;
+  z-index: 0;
+  color: rgba(255, 255, 255, 0.2); 
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+  transform-origin: center center;
+}
+
+/* --- NHÓM 1: TIỀN (Góc Trái Trên) --- */
+.bg-icon-1 {
+  top: 10%;
+  left: 5%;
+  transform: rotate(-15deg); 
+  animation: floatRandom1 8s ease-in-out infinite;
+}
+/* Dùng ::before để chứa icon duy nhất, tránh bị trùng với HTML */
+.bg-icon-1::before {
+  content: "💰";
+  position: absolute;
+  /* Đẩy các bóng (bản sao) ra thật xa để không bị dính vào icon gốc */
+  text-shadow: 
+    30vw 15vh 0 rgba(255, 255, 255, 0.15),
+    10vw 50vh 0 rgba(255, 255, 255, 0.2),
+    60vw 5vh 0 rgba(255, 255, 255, 0.15);
+}
+
+/* --- NHÓM 2: NGÂN HÀNG (Góc Phải Dưới) --- */
+.bg-icon-2 {
+  bottom: 10%;
+  right: 5%;
+  transform: rotate(10deg);
+  animation: floatRandom2 10s ease-in-out infinite;
+}
+.bg-icon-2::before {
+  content: "🏦";
+  position: absolute;
+  text-shadow: 
+    -35vw -20vh 0 rgba(255, 255, 255, 0.15),
+    -60vw 10vh 0 rgba(255, 255, 255, 0.2), 
+    -15vw -65vh 0 rgba(255, 255, 255, 0.15);
+}
+
+/* --- NHÓM 3: THẺ (Góc Phải Trên) --- */
+.bg-icon-3 {
+  top: 15%;
+  right: 10%;
+  transform: rotate(25deg);
+  animation: floatRandom3 9s ease-in-out infinite;
+}
+.bg-icon-3::before {
+  content: "💳";
+  position: absolute;
+  text-shadow: 
+    -20vw 45vh 0 rgba(255, 255, 255, 0.15),
+    -50vw 20vh 0 rgba(255, 255, 255, 0.2),
+    5vw 70vh 0 rgba(255, 255, 255, 0.15);
+}
+
+/* --- NHÓM 4: KHIÊN (Góc Trái Dưới) --- */
+.bg-icon-4 {
+  bottom: 15%;
+  left: 10%;
+  transform: rotate(-20deg);
+  animation: floatRandom1 11s ease-in-out infinite reverse;
+}
+.bg-icon-4::before {
+  content: "🛡️";
+  position: absolute;
+  text-shadow: 
+    45vw -35vh 0 rgba(255, 255, 255, 0.15),
+    25vw -60vh 0 rgba(255, 255, 255, 0.2),
+    70vw 0vh 0 rgba(255, 255, 255, 0.15);
+}
+
+/* =========================================
+   ANIMATION (Giữ nguyên hiệu ứng bay lượn)
+   ========================================= */
+@keyframes floatRandom1 {
+  0% { transform: translate(0, 0) rotate(-15deg); }
+  50% { transform: translate(15px, -25px) rotate(-5deg); }
+  100% { transform: translate(0, 0) rotate(-15deg); }
+}
+@keyframes floatRandom2 {
+  0% { transform: translate(0, 0) rotate(10deg); }
+  50% { transform: translate(-20px, 15px) rotate(20deg); }
+  100% { transform: translate(0, 0) rotate(10deg); }
+}
+@keyframes floatRandom3 {
+  0% { transform: translate(0, 0) rotate(25deg); }
+  50% { transform: translate(-15px, -15px) rotate(10deg); }
+  100% { transform: translate(0, 0) rotate(25deg); }
+}
+
+/* =========================================
+   4. CARD ĐĂNG NHẬP (Giữ nguyên)
+   ========================================= */
+.login-card {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 50px 45px;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(161, 140, 209, 0.35);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  z-index: 10;
+  position: relative;
+  backdrop-filter: blur(8px);
+}
+.login-header h2 {
+  background: linear-gradient(to right, #8e2de2, #4a00e0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 5px;
+  font-weight: 800;
+  font-size: 32px;
+}
+.login-header p { color: #888; font-size: 14px; margin-bottom: 35px; font-weight: 500; }
+.form-group { margin-bottom: 25px; text-align: left; }
+.form-group label { display: block; margin-bottom: 8px; color: #555; font-weight: 700; font-size: 13px; margin-left: 10px; }
+.form-input {
+  width: 100%; padding: 14px 20px;
+  border: 2px solid #f3e5f5; border-radius: 50px; 
+  font-size: 15px; transition: all 0.3s;
+  background: #fff; outline: none; box-sizing: border-box;
+}
+.form-input:focus { border-color: #d19fe8; box-shadow: 0 0 0 4px rgba(209, 159, 232, 0.25); }
+.login-btn {
+  width: 100%; padding: 16px;
+  background: linear-gradient(to right, #8E2DE2 0%, #4A00E0 100%);
+  color: white; border: none; border-radius: 50px;
+  font-size: 16px; font-weight: 700; cursor: pointer;
+  margin-top: 15px; box-shadow: 0 10px 25px rgba(142, 45, 226, 0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.login-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 35px rgba(142, 45, 226, 0.5); }
+.error-msg { background-color: #fff0f6; color: #d6336c; padding: 12px; border-radius: 12px; font-size: 14px; margin-bottom: 20px; border: 1px solid #ffdeeb; font-weight: 600; }
