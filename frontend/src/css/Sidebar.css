@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary-color: #6c5ce7;       
+  --primary-bg-light: #eef2ff;    
+  --sidebar-bg: #ffffff;          
+  --submenu-bg: #f8f9fa;          
+  --text-main: #111827;           
+  --text-gray: #4b5563;           
+  --text-white: #ffffff;
+  --shadow-soft: 4px 0 20px rgba(0,0,0,0.05); 
+  --shadow-active: 0 4px 12px rgba(108, 92, 231, 0.25);
+}
+
+.sidebar {
+  width: 280px;
+  /* QUAN TRỌNG: Full chiều cao, dính lên nóc */
+  height: 100vh;     
+  position: fixed;                
+  top: 0;                      
+  left: 0;
+  
+  background-color: var(--sidebar-bg);
+  color: var(--text-main);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 20px;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: var(--shadow-soft);
+  overflow-y: auto;               
+  border-right: 1px solid #e5e7eb;
+  z-index: 1000;
+}
+
+/* --- LOGO BRANDING --- */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  margin-bottom: 30px; /* Cách menu ra một đoạn */
+  background: var(--primary-bg-light); /* Nền tím nhạt làm nổi bật */
+  border-radius: 12px;
+  border: 1px solid rgba(108, 92, 231, 0.1);
+}
+
+.brand-icon {
+  font-size: 28px;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.brand-text {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--primary-color);
+  letter-spacing: -0.5px;
+}
+
+/* --- MENU STYLES (Giữ nguyên) --- */
+.menu-list { list-style: none; padding: 0; margin: 0; }
+.menu-item-container { margin-bottom: 8px; }
+
+.menu-title {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; border-radius: 8px; cursor: pointer;
+  color: var(--text-gray); font-weight: 500; font-size: 15px;
+  transition: all 0.2s ease;
+}
+.menu-title-content { display: flex; align-items: center; }
+.icon-main { margin-right: 12px; font-size: 20px; display: flex; color: #6b7280; transition: color 0.2s; }
+
+.menu-title:hover { background-color: #f3f4f6; color: var(--primary-color); }
+.menu-title:hover .icon-main { color: var(--primary-color); }
+
+.menu-title.active {
+  background-color: var(--primary-color); color: var(--text-white);
+  box-shadow: var(--shadow-active); font-weight: 600;
+}
+.menu-title.active .icon-main { color: var(--text-white); }
+
+.arrow { transition: transform 0.3s ease; font-size: 18px; opacity: 0.7; }
+.menu-title.active .arrow { opacity: 1; color: var(--text-white); }
+.arrow.rotate { transform: rotate(180deg); }
+
+.submenu {
+  max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out;
+  background-color: var(--submenu-bg); border-radius: 8px; margin-top: 4px;
+}
+.submenu.open { max-height: 800px; padding: 6px; }
+
+.submenu-item {
+  display: flex; align-items: center; text-decoration: none;
+  padding: 10px 14px; color: var(--text-gray); font-size: 14px;
+  border-radius: 6px; transition: all 0.2s; margin-bottom: 2px;
+}
+.submenu-item:hover { color: var(--primary-color); background-color: rgba(108, 92, 231, 0.08); font-weight: 600; }
+.submenu-item.active-link { color: var(--primary-color); background-color: var(--primary-bg-light); font-weight: 600; }
+.submenu-item.active-link::before { content: '•'; margin-right: 8px; font-size: 18px; color: var(--primary-color); line-height: 0; }
+
+.logout-btn { color: #ef4444 !important; margin-top: 10px; border: 1px dashed #e5e7eb; }
+.logout-btn .icon-main { color: #ef4444 !important; }
+.logout-btn:hover { background-color: #fef2f2 !important; border-color: #ef4444; }

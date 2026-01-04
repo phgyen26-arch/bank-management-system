@@ -1,120 +1,200 @@
 /**
- * MOCK DATA CHO REACT APP
- * - 1 Teller (Có thông tin chi tiết trong employees)
- * - 5 Customers (Có thông tin chi tiết, liên kết Users -> Customers)
- * - 5 Accounts (Mỗi Customer 1 account)
- * - ~250 Transactions (Mỗi Account thực hiện 50 giao dịch)
- * - Loans (Mỗi Customer 3-4 khoản vay)
+ * MOCK DATA – BANKING APP
+ * - 1 Teller
+ * - 5 Customers
+ * - 5 Accounts
+ * - ~500 Transactions (100 / customer)
+ * - Loans (>= 3 / customer)
  */
 
-export const mockData = {
-  // --- 1. PHÂN QUYỀN ---
-  roles: [
-    { role_id: 1, role_name: "Teller", description: "Giao dịch viên ngân hàng" },
-    { role_id: 2, role_name: "Customer", description: "Khách hàng cá nhân" }
-  ],
+/* =======================
+   1. ROLES
+======================= */
+const roles = [
+  { role_id: 1, role_name: "Teller", description: "Giao dịch viên ngân hàng" },
+  { role_id: 2, role_name: "Customer", description: "Khách hàng cá nhân" },
+];
 
-  // --- 2. TÀI KHOẢN ĐĂNG NHẬP ---
-  users: [
-    // Teller User
-    { user_id: 100, role_id: 1, username: "teller_main", password_hash: "phamyen123", status: "ACTIVE", created_at: "2025-01-01" },
-    // Customer Users
-    { user_id: 101, role_id: 2, username: "nguyenvanan", password_hash: "hash_cust_01", status: "ACTIVE", created_at: "2025-01-01" },
-    { user_id: 102, role_id: 2, username: "tranthibinh", password_hash: "hash_cust_02", status: "ACTIVE", created_at: "2025-01-01" },
-    { user_id: 103, role_id: 2, username: "levancuong", password_hash: "hash_cust_03", status: "ACTIVE", created_at: "2025-01-01" },
-    { user_id: 104, role_id: 2, username: "phamthidung", password_hash: "hash_cust_04", status: "ACTIVE", created_at: "2025-01-01" },
-    { user_id: 105, role_id: 2, username: "hoangvanduc", password_hash: "hash_cust_05", status: "ACTIVE", created_at: "2025-01-01" }
-  ],
+/* =======================
+   2. USERS
+======================= */
+const users = [
+  { user_id: 100, role_id: 1, username: "teller_main", password_hash: "phamyen123", status: "ACTIVE", created_at: "2025-01-01" },
 
-  // --- 3. THÔNG TIN NHÂN VIÊN (TELLER) ---
-  teller: [
-    { 
-      teller_id: 1, 
-      user_id: 100, // Link với user teller
-      full_name: "Phạm Hoàng Yến", 
-      email: "yen.ph.bank@gmail.com", 
-      phone: "0988888888", 
-      position: "Senior Teller", 
-      branch: "Chi nhánh Hội sở Hà Nội",
-      date_of_birth: "1995-08-15",
-      hire_date: "2023-01-10"
+  { user_id: 101, role_id: 2, username: "dobiettoilaai", password_hash: "toilahuyne", status: "ACTIVE", created_at: "2025-01-01" },
+  { user_id: 102, role_id: 2, username: "tranthibinh", password_hash: "hash_02", status: "ACTIVE", created_at: "2025-01-01" },
+  { user_id: 103, role_id: 2, username: "levancuong", password_hash: "hash_03", status: "ACTIVE", created_at: "2025-01-01" },
+  { user_id: 104, role_id: 2, username: "phamthidung", password_hash: "hash_04", status: "ACTIVE", created_at: "2025-01-01" },
+  { user_id: 105, role_id: 2, username: "hoangvanduc", password_hash: "hash_05", status: "ACTIVE", created_at: "2025-01-01" },
+];
+
+/* =======================
+   3. TELLER
+======================= */
+const teller = [
+  {
+    teller_id: 1,
+    user_id: 100,
+    full_name: "Phạm Hoàng Yến",
+    email: "yen.ph.bank@gmail.com",
+    phone: "0988888888",
+    position: "Senior Teller",
+    branch: "Chi nhánh Hội sở Hà Nội",
+    hire_date: "2023-01-10",
+  },
+];
+
+/* =======================
+   4. CUSTOMERS
+======================= */
+const customers = [
+  { customer_id: 1, user_id: 101, full_name: "Nguyễn Văn An", address: "Hà Nội" },
+  { customer_id: 2, user_id: 102, full_name: "Trần Thị Bình", address: "TP HCM" },
+  { customer_id: 3, user_id: 103, full_name: "Lê Văn Cường", address: "Đà Nẵng" },
+  { customer_id: 4, user_id: 104, full_name: "Phạm Thị Dung", address: "Cần Thơ" },
+  { customer_id: 5, user_id: 105, full_name: "Hoàng Văn Đức", address: "Hải Phòng" },
+];
+
+/* =======================
+   5. ACCOUNTS
+======================= */
+const accounts = [
+  { account_id: 1, customer_id: 1, account_number: "1111000001", balance: 50_000_000, currency: "VND" },
+  { account_id: 2, customer_id: 2, account_number: "2222000002", balance: 120_000_000, currency: "VND" },
+  { account_id: 3, customer_id: 3, account_number: "3333000003", balance: 5_000_000, currency: "VND" },
+  { account_id: 4, customer_id: 4, account_number: "4444000004", balance: 890_000_000, currency: "VND" },
+  { account_id: 5, customer_id: 5, account_number: "5555000005", balance: 34_000_000, currency: "VND" },
+];
+
+/* =======================
+   6. LOANS (>= 3 / CUSTOMER)
+======================= */
+const loans = [
+  // Customer 1
+  { loan_id: 1, customer_id: 1, loan_type: "Vay mua nhà", principal_amount: 1_200_000_000, interest_rate: 7.2, duration_months: 240, status: "ACTIVE" },
+  { loan_id: 2, customer_id: 1, loan_type: "Vay tiêu dùng", principal_amount: 80_000_000, interest_rate: 11.5, duration_months: 36, status: "ACTIVE" },
+  { loan_id: 3, customer_id: 1, loan_type: "Thẻ tín dụng", principal_amount: 30_000_000, interest_rate: 18.0, duration_months: 12, status: "ACTIVE" },
+
+  // Customer 2
+  { loan_id: 4, customer_id: 2, loan_type: "Vay mua ô tô", principal_amount: 600_000_000, interest_rate: 8.3, duration_months: 72, status: "ACTIVE" },
+  { loan_id: 5, customer_id: 2, loan_type: "Vay kinh doanh", principal_amount: 250_000_000, interest_rate: 10.5, duration_months: 48, status: "ACTIVE" },
+  { loan_id: 6, customer_id: 2, loan_type: "Vay thấu chi", principal_amount: 20_000_000, interest_rate: 15.0, duration_months: 12, status: "ACTIVE" },
+
+  // Customer 3
+  { loan_id: 7, customer_id: 3, loan_type: "Vay mua nhà", principal_amount: 2_000_000_000, interest_rate: 7.0, duration_months: 300, status: "ACTIVE" },
+  { loan_id: 8, customer_id: 3, loan_type: "Vay học tập", principal_amount: 60_000_000, interest_rate: 5.0, duration_months: 48, status: "ACTIVE" },
+  { loan_id: 9, customer_id: 3, loan_type: "Vay tiêu dùng", principal_amount: 40_000_000, interest_rate: 12.0, duration_months: 24, status: "ACTIVE" },
+
+  // Customer 4
+  { loan_id: 10, customer_id: 4, loan_type: "Vay mua ô tô", principal_amount: 850_000_000, interest_rate: 8.0, duration_months: 84, status: "ACTIVE" },
+  { loan_id: 11, customer_id: 4, loan_type: "Vay tiêu dùng", principal_amount: 120_000_000, interest_rate: 11.0, duration_months: 36, status: "ACTIVE" },
+  { loan_id: 12, customer_id: 4, loan_type: "Vay trả góp 0%", principal_amount: 20_000_000, interest_rate: 0.0, duration_months: 6, status: "ACTIVE" },
+
+  // Customer 5
+  { loan_id: 13, customer_id: 5, loan_type: "Vay kinh doanh nhỏ", principal_amount: 180_000_000, interest_rate: 10.0, duration_months: 36, status: "ACTIVE" },
+  { loan_id: 14, customer_id: 5, loan_type: "Vay y tế", principal_amount: 50_000_000, interest_rate: 6.0, duration_months: 24, status: "ACTIVE" },
+  { loan_id: 15, customer_id: 5, loan_type: "Vay tiêu dùng", principal_amount: 35_000_000, interest_rate: 12.5, duration_months: 18, status: "ACTIVE" },
+];
+
+/* =======================
+   7. TRANSACTIONS (FIXED)
+======================= */
+const transactions = (() => {
+  const txs = [];
+  let txId = 1;
+
+  const IN_TYPES = ["DEPOSIT", "TRANSFER_IN", "REFUND"];
+  const OUT_TYPES = ["PAYMENT", "TRANSFER_OUT", "WITHDRAW"];
+
+  accounts.forEach((account) => {
+    const BALANCE = account.balance;
+
+    // 1. Tổng tiền ra (random nhưng hợp lý)
+    const totalOutTarget =
+      Math.floor(Math.random() * BALANCE * 0.8) + BALANCE * 0.5;
+
+    // 2. Tổng tiền vào = tiền ra + số dư
+    const totalInTarget = totalOutTarget + BALANCE;
+
+    let totalIn = 0;
+    let totalOut = 0;
+
+    /* ===== IN TRANSACTIONS ===== */
+    for (let i = 0; i < 50; i++) {
+      const amount =
+        i === 49
+          ? totalInTarget - totalIn
+          : Math.floor(Math.random() * 5_000_000) + 500_000;
+
+      totalIn += amount;
+
+      txs.push({
+        transaction_id: txId++,
+        sender_account_id: null,
+        receiver_account_id: account.account_id,
+        transaction_type:
+          IN_TYPES[Math.floor(Math.random() * IN_TYPES.length)],
+        amount,
+        transaction_time: randomDate(),
+        description: "Nhận tiền",
+        status: "SUCCESS",
+      });
     }
-  ],
 
-  // --- 4. THÔNG TIN KHÁCH HÀNG ---
-  customers: [
-    { customer_id: 1, user_id: 101, full_name: "Nguyễn Văn An", email: "an.nguyen@gmail.com", phone: "0901111111", address: "Hà Nội", date_of_birth: "1990-01-01", id_card: "001090000001" },
-    { customer_id: 2, user_id: 102, full_name: "Trần Thị Bình", email: "binh.tran@gmail.com", phone: "0902222222", address: "TP HCM", date_of_birth: "1992-05-15", id_card: "001092000002" },
-    { customer_id: 3, user_id: 103, full_name: "Lê Văn Cường", email: "cuong.le@gmail.com", phone: "0903333333", address: "Đà Nẵng", date_of_birth: "1988-09-20", id_card: "001088000003" },
-    { customer_id: 4, user_id: 104, full_name: "Phạm Thị Dung", email: "dung.pham@gmail.com", phone: "0904444444", address: "Cần Thơ", date_of_birth: "1995-12-12", id_card: "001095000004" },
-    { customer_id: 5, user_id: 105, full_name: "Hoàng Văn Đức", email: "duc.hoang@gmail.com", phone: "0905555555", address: "Hải Phòng", date_of_birth: "1991-03-30", id_card: "001091000005" }
-  ],
+    /* ===== OUT TRANSACTIONS ===== */
+    for (let i = 0; i < 50; i++) {
+      const amount =
+        i === 49
+          ? totalOutTarget - totalOut
+          : Math.floor(Math.random() * 3_000_000) + 100_000;
 
-  // --- 5. TÀI KHOẢN THANH TOÁN (Mỗi khách 1 tài khoản) ---
-  accounts: [
-    { account_id: 1, customer_id: 1, account_number: "1111000001", balance: 50000000, currency: "VND", status: "ACTIVE", open_date: "2024-01-01" },
-    { account_id: 2, customer_id: 2, account_number: "2222000002", balance: 120000000, currency: "VND", status: "ACTIVE", open_date: "2024-01-01" },
-    { account_id: 3, customer_id: 3, account_number: "3333000003", balance: 5000000, currency: "VND", status: "ACTIVE", open_date: "2024-01-01" },
-    { account_id: 4, customer_id: 4, account_number: "4444000004", balance: 890000000, currency: "VND", status: "ACTIVE", open_date: "2024-01-01" },
-    { account_id: 5, customer_id: 5, account_number: "5555000005", balance: 34000000, currency: "VND", status: "ACTIVE", open_date: "2024-01-01" }
-  ],
+      totalOut += amount;
 
-  // --- 6. KHOẢN VAY (LOANS) ---
-  loans: [
-    // Customer 1
-    { loan_id: 1, customer_id: 1, loan_type: "Vay mua nhà", principal_amount: 1000000000, interest_rate: 7.5, start_date: "2024-01-01", duration_months: 120, status: "ACTIVE" },
-    { loan_id: 2, customer_id: 1, loan_type: "Vay tiêu dùng", principal_amount: 50000000, interest_rate: 12.0, start_date: "2025-01-01", duration_months: 24, status: "ACTIVE" },
-    { loan_id: 3, customer_id: 1, loan_type: "Thẻ tín dụng", principal_amount: 20000000, interest_rate: 18.0, start_date: "2025-06-01", duration_months: 12, status: "ACTIVE" },
-    // Customer 2
-    { loan_id: 4, customer_id: 2, loan_type: "Vay mua xe", principal_amount: 500000000, interest_rate: 8.5, start_date: "2024-05-15", duration_months: 60, status: "ACTIVE" },
-    { loan_id: 5, customer_id: 2, loan_type: "Vay kinh doanh", principal_amount: 200000000, interest_rate: 10.5, start_date: "2024-11-20", duration_months: 36, status: "ACTIVE" },
-    { loan_id: 6, customer_id: 2, loan_type: "Vay thấu chi", principal_amount: 10000000, interest_rate: 15.0, start_date: "2025-02-01", duration_months: 12, status: "ACTIVE" },
-    // Customer 3
-    { loan_id: 7, customer_id: 3, loan_type: "Vay mua nhà", principal_amount: 2500000000, interest_rate: 7.2, start_date: "2023-01-01", duration_months: 240, status: "ACTIVE" },
-    { loan_id: 8, customer_id: 3, loan_type: "Vay sửa nhà", principal_amount: 300000000, interest_rate: 9.0, start_date: "2024-08-01", duration_months: 48, status: "ACTIVE" },
-    { loan_id: 9, customer_id: 3, loan_type: "Vay học tập", principal_amount: 50000000, interest_rate: 5.0, start_date: "2025-09-01", duration_months: 48, status: "ACTIVE" },
-    // Customer 4
-    { loan_id: 10, customer_id: 4, loan_type: "Vay mua ô tô", principal_amount: 800000000, interest_rate: 8.0, start_date: "2024-03-10", duration_months: 72, status: "ACTIVE" },
-    { loan_id: 11, customer_id: 4, loan_type: "Vay tiêu dùng", principal_amount: 100000000, interest_rate: 11.5, start_date: "2025-01-20", duration_months: 36, status: "ACTIVE" },
-    { loan_id: 12, customer_id: 4, loan_type: "Vay trả góp", principal_amount: 15000000, interest_rate: 0.0, start_date: "2025-10-10", duration_months: 6, status: "ACTIVE" },
-    // Customer 5
-    { loan_id: 13, customer_id: 5, loan_type: "Vay kinh doanh nhỏ", principal_amount: 150000000, interest_rate: 10.0, start_date: "2024-06-01", duration_months: 24, status: "ACTIVE" },
-    { loan_id: 14, customer_id: 5, loan_type: "Vay y tế", principal_amount: 40000000, interest_rate: 6.0, start_date: "2025-04-01", duration_months: 12, status: "ACTIVE" },
-    { loan_id: 15, customer_id: 5, loan_type: "Vay tiêu dùng", principal_amount: 25000000, interest_rate: 12.5, start_date: "2025-11-15", duration_months: 18, status: "ACTIVE" }
-  ],
+      txs.push({
+        transaction_id: txId++,
+        sender_account_id: account.account_id,
+        receiver_account_id: null,
+        transaction_type:
+          OUT_TYPES[Math.floor(Math.random() * OUT_TYPES.length)],
+        amount,
+        transaction_time: randomDate(),
+        description: "Chi tiêu",
+        status: "SUCCESS",
+      });
+    }
 
-  // --- 7. LỊCH SỬ GIAO DỊCH (250 GIAO DỊCH, 50 per User) ---
-  // Sử dụng một hàm IIFE (Immediately Invoked Function Expression) để sinh dữ liệu tĩnh gọn gàng trong file này
-  transactions: (() => {
-    const txs = [];
-    const accounts = [1, 2, 3, 4, 5];
-    const types = ["TRANSFER", "PAYMENT", "DEPOSIT"];
-    const descriptions = ["Chuyển tiền", "Thanh toán hóa đơn", "Mua sắm online", "Trả nợ", "Ăn uống"];
-    let idCounter = 1;
+    // DEBUG CHECK (có thể xoá khi ổn)
+    if (totalIn - totalOut !== BALANCE) {
+      console.error("❌ Balance mismatch:", {
+        account: account.account_number,
+        totalIn,
+        totalOut,
+        balance: BALANCE,
+      });
+    }
+  });
 
-    // Sinh 50 giao dịch cho mỗi tài khoản
-    accounts.forEach(senderId => {
-      for (let i = 0; i < 50; i++) {
-        // Chọn ngẫu nhiên người nhận (không trùng người gửi)
-        let receiverId = senderId;
-        while (receiverId === senderId) {
-          receiverId = accounts[Math.floor(Math.random() * accounts.length)];
-        }
+  return txs.sort(
+    (a, b) => new Date(b.transaction_time) - new Date(a.transaction_time)
+  );
 
-        txs.push({
-          transaction_id: idCounter++,
-          sender_account_id: senderId,
-          receiver_account_id: receiverId,
-          transaction_type: types[Math.floor(Math.random() * types.length)],
-          amount: Math.floor(Math.random() * 50) * 100000 + 50000, // Random từ 50k đến 5tr
-          transaction_time: `2025-${Math.floor(Math.random() * 12) + 1}-${Math.floor(Math.random() * 28) + 1}T${Math.floor(Math.random() * 23)}:${Math.floor(Math.random() * 59)}:00`,
-          description: descriptions[Math.floor(Math.random() * descriptions.length)],
-          status: "SUCCESS"
-        });
-      }
-    });
-    
-    // Sắp xếp lại theo ID để dễ nhìn (hoặc theo ngày tháng nếu muốn)
-    return txs.sort((a, b) => a.transaction_id - b.transaction_id);
-  })()
+  function randomDate() {
+    const m = String(Math.floor(Math.random() * 12) + 1).padStart(2, "0");
+    const d = String(Math.floor(Math.random() * 28) + 1).padStart(2, "0");
+    return `2025-${m}-${d}T10:00:00`;
+  }
+})();
+
+
+/* =======================
+   EXPORT
+======================= */
+export const mockData = {
+  roles,
+  users,
+  teller,
+  customers,
+  accounts,
+  loans,
+  transactions,
 };

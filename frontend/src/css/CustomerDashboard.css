@@ -1,0 +1,81 @@
+/* Container chính: Căn giữa nội dung theo chiều dọc và ngang */
+.dashboard-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh; /* Chiều cao vùng hiển thị */
+  background-color: transparent;
+}
+
+/* Khung chứa nội dung và icon: Để làm mốc tọa độ (relative) */
+.dashboard-content {
+  position: relative;
+  padding: 60px 80px;
+  text-align: center;
+}
+
+/* --- Style chung cho các Icon trang trí --- */
+.deco-icon {
+  position: absolute;
+  font-size: 2.2rem; /* Kích thước vừa phải */
+  color: #a29bfe;    /* Màu tím nhạt (tông màu phụ) */
+  opacity: 0.6;      /* Mờ nhẹ để không tranh chấp với chữ */
+  z-index: 0;        /* Nằm dưới lớp chữ */
+  animation: float 4s ease-in-out infinite; /* Hiệu ứng trôi nhẹ */
+}
+
+/* Vị trí từng icon ở 4 góc */
+.icon-top-left {
+  top: 0;
+  left: 0;
+  animation-delay: 0s; /* Chạy ngay */
+}
+
+.icon-top-right {
+  top: 0;
+  right: 0;
+  animation-delay: 1s; /* Chạy trễ 1s cho tự nhiên */
+}
+
+.icon-bottom-left {
+  bottom: 0;
+  left: 0;
+  animation-delay: 2s;
+}
+
+.icon-bottom-right {
+  bottom: 0;
+  right: 0;
+  animation-delay: 3s;
+}
+
+/* --- Style cho phần Chữ (Text) --- */
+.welcome-text {
+  position: relative;
+  z-index: 1; /* Nổi lên trên icon */
+}
+
+.welcome-title {
+  color: #2d3436;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+
+.brand-highlight {
+  color: #6c5ce7; /* Màu tím thương hiệu */
+}
+
+.welcome-subtitle {
+  color: #636e72;
+  font-size: 1.1rem;
+  font-weight: 400;
+}
+
+/* --- Hiệu ứng Animation: Trôi lên trôi xuống nhẹ nhàng --- */
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(5deg); } /* Bay lên 10px và xoay nhẹ */
+  100% { transform: translateY(0px) rotate(0deg); }
+}
