@@ -10,10 +10,26 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 
 import Sidebar from "./components/Sidebar";
 
-// Pages
+/* ================= PAGES ================= */
+
+// Auth
 import Login from "./pages/Login";
+
+// Dashboard
 import TellerDashboard from "./pages/TellerDashboard";
 import CustomerDashboard from "./pages/CustomerDashboard";
+
+// ================= TELLER =================
+import CreateAccount from "./pages/teller/CreateAccount";
+import CashDeposit from "./pages/teller/CashDeposit";
+import CashWithdraw from "./pages/teller/CashWithdraw";
+import BillPayments from "./pages/teller/BillPayments";
+
+// 🔐 SECURITY (MỚI THÊM)
+import CardManagement from "./pages/teller/CardManagement";
+import VaultRegistry from "./pages/teller/VaultRegistry";
+
+// ================= CUSTOMER =================
 
 // Account
 import ViewAccountInfo from "./pages/account/ViewAccountInfo";
@@ -44,27 +60,18 @@ const ProtectedRoute = ({ children, allowedRole }) => {
   return children;
 };
 
-/* ================= MAIN LAYOUT (FIX SCROLL) ================= */
+/* ================= MAIN LAYOUT (CÓ SCROLL) ================= */
 const MainLayout = () => {
   return (
-    <div
-      style={{
-        display: "flex",
-        height: "100vh",
-        backgroundColor: "#f9fafb",
-        overflow: "hidden", // ❗ khóa layout ngoài
-      }}
-    >
-      {/* Sidebar cố định */}
+    <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
       <Sidebar />
-
-      {/* CONTENT SCROLL */}
       <div
         style={{
           flex: 1,
-          marginLeft: "280px", // đúng với width sidebar
-          overflowY: "auto",   // ✅ CUỘN Ở ĐÂY
-          padding: "30px",
+          marginLeft: "250px",
+          marginTop: "64px",
+          overflowY: "auto",
+          background: "#f4f6f9",
         }}
       >
         <Outlet />
@@ -79,19 +86,39 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+          {/* LOGIN */}
           <Route path="/" element={<Login />} />
 
-          {/* Teller */}
+          {/* ================= TELLER ================= */}
           <Route
-            path="/teller"
             element={
               <ProtectedRoute allowedRole={1}>
-                <TellerDashboard />
+                <MainLayout />
               </ProtectedRoute>
             }
-          />
+          >
+            <Route path="/teller" element={<TellerDashboard />} />
 
-          {/* Customer */}
+            {/* ACCOUNT SERVICES */}
+            <Route path="/teller/create-account" element={<CreateAccount />} />
+
+            {/* TRANSACTIONS */}
+            <Route path="/teller/deposit" element={<CashDeposit />} />
+            <Route path="/teller/withdraw" element={<CashWithdraw />} />
+            <Route path="/teller/bill-payments" element={<BillPayments />} />
+
+            {/* 🔐 VAULT & SECURITY */}
+            <Route
+              path="/teller/card-management"
+              element={<CardManagement />}
+            />
+            <Route
+              path="/teller/vault-registry"
+              element={<VaultRegistry />}
+            />
+          </Route>
+
+          {/* ================= CUSTOMER ================= */}
           <Route
             element={
               <ProtectedRoute allowedRole={2}>
@@ -115,8 +142,6 @@ function App() {
             <Route path="/card/report" element={<ReportLostStolen />} />
             <Route path="/card/info" element={<ViewCardInfo />} />
             <Route path="/card/update" element={<UpdateCard />} />
-            <Route path="/card/activation" element={<h2>Đang phát triển</h2>} />
-            <Route path="/card/add" element={<h2>Đang phát triển</h2>} />
 
             {/* Transaction */}
             <Route
@@ -126,6 +151,7 @@ function App() {
             <Route path="/transaction/pay-bill" element={<PayBill />} />
           </Route>
 
+          {/* 404 */}
           <Route path="*" element={<div>404 Not Found</div>} />
         </Routes>
       </Router>

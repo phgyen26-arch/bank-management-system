@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; 
 import { 
   FiUser, 
   FiCreditCard, 
@@ -7,12 +8,15 @@ import {
   FiActivity, 
   FiChevronDown, 
   FiLogOut, 
-  FiLayers 
+  FiLayers, 
+  FiShield, 
+  FiSearch  
 } from "react-icons/fi";
 
 import "../css/Sidebar.css";
 
-const SIDEBAR_DATA = [
+// --- MENU 1: CUSTOMER (Giữ nguyên menu cũ của bạn) ---
+const CUSTOMER_MENU = [
   {
     title: 'Account',
     path: '/account',
@@ -54,30 +58,73 @@ const SIDEBAR_DATA = [
   }
 ];
 
+// --- MENU 2: TELLER (Cập nhật link có ?tab=...) ---
+const TELLER_MENU = [
+  {
+    title: 'Account Services',
+    path: '/teller/accounts', // Path ảo để định danh nhóm
+    icon: <FiUser />,
+    subItems: [
+      // 3 dòng này trỏ về cùng 1 trang nhưng khác tham số Tab
+      { title: 'Open New Account', path: '/teller/create-account?tab=open' },
+      { title: 'Update Account', path: '/teller/create-account?tab=update' },
+      { title: 'Lock / Suspend', path: '/teller/create-account?tab=lock' },
+    ]
+  },
+  {
+    title: 'Transactions',
+    path: '/teller/transactions',
+    icon: <FiDollarSign />,
+    subItems: [
+      { title: 'Cash Deposit', path: '/teller/deposit' },
+      { title: 'Cash Withdraw', path: '/teller/withdraw' },
+      { title: 'Bill Payments', path: '/teller/bill-payments' }
+    ]
+  },
+  {
+    title: 'Vault & Security',
+    path: '/teller/vault-security',
+    icon: <FiShield />,
+    subItems: [
+      { title: 'Card Management', path: '/teller/card-management' },
+      { title: 'Vault Registry', path: '/teller/vault-registry' }
+    ]
+  }
+];
+
 const Sidebar = () => {
+  const { user, logout } = useAuth();
   const [activeMenu, setActiveMenu] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Kiểm tra Role: 1 là Teller, ngược lại là Customer
+  const isTeller = user?.role_id === 1;
+  const currentMenuData = isTeller ? TELLER_MENU : CUSTOMER_MENU;
+  const roleLabel = isTeller ? 'Teller Workspace' : 'Personal Banking';
+
   useEffect(() => {
-    const activeItem = SIDEBAR_DATA.find(item =>
-      item.subItems.some(sub => sub.path === location.pathname)
+    // Tự động mở menu cha khi đường dẫn hiện tại khớp với mục con
+    const currentPathFull = location.pathname + location.search;
+
+    const activeItem = currentMenuData.find(item =>
+      item.subItems.some(sub => {
+        // So sánh: Nếu đang ở /teller/create-account?tab=open thì mục chứa nó sẽ mở
+        // Logic `includes` giúp bắt được các params phức tạp
+        return currentPathFull.includes(sub.path.split('?')[0]);
+      })
     );
     if (activeItem) {
       setActiveMenu(activeItem.title);
     }
-  }, [location.pathname]);
+  }, [location.pathname, location.search, currentMenuData]);
 
   const toggleMenu = (title) => {
     setActiveMenu(activeMenu === title ? null : title);
   };
 
   const handleLogout = () => {
-    // Xóa dữ liệu đăng nhập nếu có
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-
-    // Điều hướng về trang đăng nhập
+    logout();
     navigate("/");
   };
 
@@ -88,12 +135,17 @@ const Sidebar = () => {
         <div className="brand-icon">
           <FiLayers />
         </div>
-        <span className="brand-text">SecureBank</span>
+        <div className="brand-text">
+            <span>SecureBank</span>
+            <span style={{ fontSize: '10px', display: 'block', opacity: 0.6, fontWeight: 'normal' }}>
+                {roleLabel}
+            </span>
+        </div>
       </div>
 
-      {/* MENU */}
+      {/* MENU LIST */}
       <ul className="menu-list">
-        {SIDEBAR_DATA.map((item, index) => {
+        {currentMenuData.map((item, index) => {
           const isActiveParent = activeMenu === item.title;
 
           return (
@@ -113,7 +165,16 @@ const Sidebar = () => {
 
               <ul className={`submenu ${isActiveParent ? 'open' : ''}`}>
                 {item.subItems.map((sub, subIndex) => {
-                  const isActiveLink = location.pathname === sub.path;
+                  
+                  // --- LOGIC ACTIVE ĐƯỢC NÂNG CẤP ---
+                  // Lấy full URL hiện tại (bao gồm ?tab=...)
+                  const currentFull = location.pathname + location.search;
+                  
+                  // So sánh chính xác tuyệt đối để biết tab nào đang active
+                  // Trường hợp đặc biệt: Nếu vào trang gốc (không có ?tab) thì mặc định là tab=open
+                  const isActiveLink = currentFull === sub.path || 
+                     (sub.path.includes('?tab=open') && currentFull === '/teller/create-account');
+
                   return (
                     <li key={subIndex}>
                       <Link
