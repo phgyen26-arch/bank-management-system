@@ -15,7 +15,7 @@ import {
 
 import "../css/Sidebar.css";
 
-// --- MENU 1: CUSTOMER (Giữ nguyên menu cũ của bạn) ---
+// --- MENU 1: CUSTOMER (Đã thêm Transfer Money) ---
 const CUSTOMER_MENU = [
   {
     title: 'Account',
@@ -53,19 +53,19 @@ const CUSTOMER_MENU = [
     icon: <FiActivity />,
     subItems: [
       { title: 'View Account Statement', path: '/transaction/statement' },
-      { title: 'Pay Bill', path: '/transaction/pay-bill' }
+      { title: 'Pay Bill', path: '/transaction/pay-bill' },
+      { title: 'Transfer Money', path: '/transaction/transfer' } // <--- MỚI THÊM
     ]
   }
 ];
 
-// --- MENU 2: TELLER (Cập nhật link có ?tab=...) ---
+// --- MENU 2: TELLER (Giữ nguyên) ---
 const TELLER_MENU = [
   {
     title: 'Account Services',
-    path: '/teller/accounts', // Path ảo để định danh nhóm
+    path: '/teller/accounts', 
     icon: <FiUser />,
     subItems: [
-      // 3 dòng này trỏ về cùng 1 trang nhưng khác tham số Tab
       { title: 'Open New Account', path: '/teller/create-account?tab=open' },
       { title: 'Update Account', path: '/teller/create-account?tab=update' },
       { title: 'Lock / Suspend', path: '/teller/create-account?tab=lock' },
@@ -173,7 +173,7 @@ const Sidebar = () => {
                   // So sánh chính xác tuyệt đối để biết tab nào đang active
                   // Trường hợp đặc biệt: Nếu vào trang gốc (không có ?tab) thì mặc định là tab=open
                   const isActiveLink = currentFull === sub.path || 
-                     (sub.path.includes('?tab=open') && currentFull === '/teller/create-account');
+                       (sub.path.includes('?tab=open') && currentFull === '/teller/create-account');
 
                   return (
                     <li key={subIndex}>

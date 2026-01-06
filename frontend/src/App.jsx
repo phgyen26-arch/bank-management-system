@@ -25,7 +25,7 @@ import CashDeposit from "./pages/teller/CashDeposit";
 import CashWithdraw from "./pages/teller/CashWithdraw";
 import BillPayments from "./pages/teller/BillPayments";
 
-// 🔐 SECURITY (MỚI THÊM)
+// 🔐 SECURITY
 import CardManagement from "./pages/teller/CardManagement";
 import VaultRegistry from "./pages/teller/VaultRegistry";
 
@@ -49,6 +49,7 @@ import UpdateCard from "./pages/card/UpdateCard";
 // Transaction
 import ViewAccountStatement from "./pages/transaction/ViewAccountStatement";
 import PayBill from "./pages/transaction/PayBill";
+import TransferMoney from "./pages/transaction/transferMoney"; // <--- MỚI THÊM (Lưu ý: Tên file phải là transferMoney.jsx)
 
 /* ================= PROTECTED ROUTE ================= */
 const ProtectedRoute = ({ children, allowedRole }) => {
@@ -149,6 +150,10 @@ function App() {
               element={<ViewAccountStatement />}
             />
             <Route path="/transaction/pay-bill" element={<PayBill />} />
+            
+            {/* ---> ROUTE MỚI THÊM Ở ĐÂY <--- */}
+            <Route path="/transaction/transfer" element={<TransferMoney />} />
+            
           </Route>
 
           {/* 404 */}

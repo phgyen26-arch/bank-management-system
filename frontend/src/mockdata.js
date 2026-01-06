@@ -11,8 +11,8 @@
    1. ROLES
 ======================= */
 const roles = [
-  { role_id: 1, role_name: "Teller", description: "Giao dịch viên ngân hàng" },
-  { role_id: 2, role_name: "Customer", description: "Khách hàng cá nhân" },
+  { role_id: 1, role_name: "Teller", description: "Bank Teller" },
+  { role_id: 2, role_name: "Customer", description: "Personal Customer" },
 ];
 
 /* =======================
@@ -39,7 +39,7 @@ const teller = [
     email: "yen.ph.bank@gmail.com",
     phone: "0988888888",
     position: "Senior Teller",
-    branch: "Chi nhánh Hội sở Hà Nội",
+    branch: "Hanoi Head Office Branch", // Translated
     hire_date: "2023-01-10",
   },
 ];
@@ -101,7 +101,7 @@ const customers = [
 ];
 
 /* =======================
-   5. ACCOUNTS (GIỮ NGUYÊN + OPEN DATE)
+   5. ACCOUNTS (KEPT AS IS + OPEN DATE)
 ======================= */
 const accounts = [
   { account_id: 1, customer_id: 1, account_number: "1111000001", balance: 50_000_000, currency: "VND", open_date: "2022-01-01" },
@@ -115,25 +115,25 @@ const accounts = [
    6. LOANS
 ======================= */
 const loans = [
-  { loan_id: 1, customer_id: 1, loan_type: "Vay mua nhà", principal_amount: 1_200_000_000, interest_rate: 7.2, duration_months: 240, status: "ACTIVE" },
-  { loan_id: 2, customer_id: 1, loan_type: "Vay tiêu dùng", principal_amount: 80_000_000, interest_rate: 11.5, duration_months: 36, status: "ACTIVE" },
-  { loan_id: 3, customer_id: 1, loan_type: "Thẻ tín dụng", principal_amount: 30_000_000, interest_rate: 18.0, duration_months: 12, status: "ACTIVE" },
+  { loan_id: 1, customer_id: 1, loan_type: "Home Loan", principal_amount: 1_200_000_000, interest_rate: 7.2, duration_months: 240, status: "ACTIVE" },
+  { loan_id: 2, customer_id: 1, loan_type: "Consumer Loan", principal_amount: 80_000_000, interest_rate: 11.5, duration_months: 36, status: "ACTIVE" },
+  { loan_id: 3, customer_id: 1, loan_type: "Credit Card", principal_amount: 30_000_000, interest_rate: 18.0, duration_months: 12, status: "ACTIVE" },
 
-  { loan_id: 4, customer_id: 2, loan_type: "Vay mua ô tô", principal_amount: 600_000_000, interest_rate: 8.3, duration_months: 72, status: "ACTIVE" },
-  { loan_id: 5, customer_id: 2, loan_type: "Vay kinh doanh", principal_amount: 250_000_000, interest_rate: 10.5, duration_months: 48, status: "ACTIVE" },
-  { loan_id: 6, customer_id: 2, loan_type: "Vay thấu chi", principal_amount: 20_000_000, interest_rate: 15.0, duration_months: 12, status: "ACTIVE" },
+  { loan_id: 4, customer_id: 2, loan_type: "Car Loan", principal_amount: 600_000_000, interest_rate: 8.3, duration_months: 72, status: "ACTIVE" },
+  { loan_id: 5, customer_id: 2, loan_type: "Business Loan", principal_amount: 250_000_000, interest_rate: 10.5, duration_months: 48, status: "ACTIVE" },
+  { loan_id: 6, customer_id: 2, loan_type: "Overdraft", principal_amount: 20_000_000, interest_rate: 15.0, duration_months: 12, status: "ACTIVE" },
 
-  { loan_id: 7, customer_id: 3, loan_type: "Vay mua nhà", principal_amount: 2_000_000_000, interest_rate: 7.0, duration_months: 300, status: "ACTIVE" },
-  { loan_id: 8, customer_id: 3, loan_type: "Vay học tập", principal_amount: 60_000_000, interest_rate: 5.0, duration_months: 48, status: "ACTIVE" },
-  { loan_id: 9, customer_id: 3, loan_type: "Vay tiêu dùng", principal_amount: 40_000_000, interest_rate: 12.0, duration_months: 24, status: "ACTIVE" },
+  { loan_id: 7, customer_id: 3, loan_type: "Home Loan", principal_amount: 2_000_000_000, interest_rate: 7.0, duration_months: 300, status: "ACTIVE" },
+  { loan_id: 8, customer_id: 3, loan_type: "Student Loan", principal_amount: 60_000_000, interest_rate: 5.0, duration_months: 48, status: "ACTIVE" },
+  { loan_id: 9, customer_id: 3, loan_type: "Consumer Loan", principal_amount: 40_000_000, interest_rate: 12.0, duration_months: 24, status: "ACTIVE" },
 
-  { loan_id: 10, customer_id: 4, loan_type: "Vay mua ô tô", principal_amount: 850_000_000, interest_rate: 8.0, duration_months: 84, status: "ACTIVE" },
-  { loan_id: 11, customer_id: 4, loan_type: "Vay tiêu dùng", principal_amount: 120_000_000, interest_rate: 11.0, duration_months: 36, status: "ACTIVE" },
-  { loan_id: 12, customer_id: 4, loan_type: "Vay trả góp 0%", principal_amount: 20_000_000, interest_rate: 0.0, duration_months: 6, status: "ACTIVE" },
+  { loan_id: 10, customer_id: 4, loan_type: "Car Loan", principal_amount: 850_000_000, interest_rate: 8.0, duration_months: 84, status: "ACTIVE" },
+  { loan_id: 11, customer_id: 4, loan_type: "Consumer Loan", principal_amount: 120_000_000, interest_rate: 11.0, duration_months: 36, status: "ACTIVE" },
+  { loan_id: 12, customer_id: 4, loan_type: "0% Installment Loan", principal_amount: 20_000_000, interest_rate: 0.0, duration_months: 6, status: "ACTIVE" },
 
-  { loan_id: 13, customer_id: 5, loan_type: "Vay kinh doanh nhỏ", principal_amount: 180_000_000, interest_rate: 10.0, duration_months: 36, status: "ACTIVE" },
-  { loan_id: 14, customer_id: 5, loan_type: "Vay y tế", principal_amount: 50_000_000, interest_rate: 6.0, duration_months: 24, status: "ACTIVE" },
-  { loan_id: 15, customer_id: 5, loan_type: "Vay tiêu dùng", principal_amount: 35_000_000, interest_rate: 12.5, duration_months: 18, status: "ACTIVE" },
+  { loan_id: 13, customer_id: 5, loan_type: "Small Business Loan", principal_amount: 180_000_000, interest_rate: 10.0, duration_months: 36, status: "ACTIVE" },
+  { loan_id: 14, customer_id: 5, loan_type: "Medical Loan", principal_amount: 50_000_000, interest_rate: 6.0, duration_months: 24, status: "ACTIVE" },
+  { loan_id: 15, customer_id: 5, loan_type: "Consumer Loan", principal_amount: 35_000_000, interest_rate: 12.5, duration_months: 18, status: "ACTIVE" },
 ];
 
 /* =======================
@@ -165,7 +165,7 @@ const transactions = (() => {
         transaction_type: IN_TYPES[Math.floor(Math.random() * IN_TYPES.length)],
         amount,
         transaction_time: randomDate(),
-        description: "Nhận tiền",
+        description: "Receive Money", // Translated
         status: "SUCCESS",
       });
     }
@@ -181,7 +181,7 @@ const transactions = (() => {
         transaction_type: OUT_TYPES[Math.floor(Math.random() * OUT_TYPES.length)],
         amount,
         transaction_time: randomDate(),
-        description: "Chi tiêu",
+        description: "Payment", // Translated
         status: "SUCCESS",
       });
     }
