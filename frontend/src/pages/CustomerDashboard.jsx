@@ -1,7 +1,7 @@
 import React from 'react';
 import { FiCreditCard, FiDollarSign, FiShield, FiTrendingUp } from "react-icons/fi";
 
-// Import file CSS vừa tạo
+// Import the created CSS file
 import '../css/CustomerDashboard.css';
 
 const CustomerDashboard = () => {
@@ -9,20 +9,20 @@ const CustomerDashboard = () => {
     <div className="dashboard-container">
       <div className="dashboard-content">
         
-        {/* --- 4 ICON TRANG TRÍ 4 GÓC --- */}
+        {/* --- 4 DECORATIVE ICONS IN 4 CORNERS --- */}
         <FiDollarSign className="deco-icon icon-top-left" />
         <FiShield className="deco-icon icon-top-right" />
         <FiCreditCard className="deco-icon icon-bottom-left" />
         <FiTrendingUp className="deco-icon icon-bottom-right" />
 
-        {/* --- NỘI DUNG CHÍNH --- */}
+        {/* --- MAIN CONTENT --- */}
         <div className="welcome-text">
           <h1 className="welcome-title">
-            Chào mừng trở lại,<br />
-            <span className="brand-highlight">Khách hàng thân thiết</span>!
+            Welcome back,<br />
+            <span className="brand-highlight">Valued Customer</span>!
           </h1>
           <p className="welcome-subtitle">
-            Chúc bạn một ngày giao dịch hiệu quả cùng SecureBank.
+            Wishing you a productive banking day with SecureBank.
           </p>
         </div>
 
