@@ -1,11 +1,4 @@
-/**
- * MOCK DATA – BANKING APP
- * - 1 Teller
- * - 5 Customers
- * - 5 Accounts
- * - ~500 Transactions (100 / customer)
- * - Loans (>= 3 / customer)
- */
+// file: src/mockData.js
 
 /* =======================
    1. ROLES
@@ -20,7 +13,6 @@ const roles = [
 ======================= */
 const users = [
   { user_id: 100, role_id: 1, username: "teller_main", password_hash: "phamyen123", status: "ACTIVE", created_at: "2025-01-01" },
-
   { user_id: 101, role_id: 2, username: "dobiettoilaai", password_hash: "toilahuyne", status: "ACTIVE", created_at: "2025-01-01" },
   { user_id: 102, role_id: 2, username: "tranthibinh", password_hash: "hash_02", status: "ACTIVE", created_at: "2025-01-01" },
   { user_id: 103, role_id: 2, username: "levancuong", password_hash: "hash_03", status: "ACTIVE", created_at: "2025-01-01" },
@@ -39,7 +31,7 @@ const teller = [
     email: "yen.ph.bank@gmail.com",
     phone: "0988888888",
     position: "Senior Teller",
-    branch: "Hanoi Head Office Branch", // Translated
+    branch: "Hanoi Head Office Branch",
     hire_date: "2023-01-10",
   },
 ];
@@ -53,7 +45,7 @@ const customers = [
     user_id: 101,
     full_name: "Nguyễn Văn An",
     date_of_birth: "1998-05-12",
-    id_card: "001098000111",
+    id_card: "001098000111", // Dùng mã này để test Bill Điện
     phone: "0901234567",
     email: "an.nguyen@example.com",
     address: "123 Nguyễn Trãi, Quận 1, TP.HCM",
@@ -63,7 +55,7 @@ const customers = [
     user_id: 102,
     full_name: "Trần Thị Bình",
     date_of_birth: "1997-08-22",
-    id_card: "001097000222",
+    id_card: "001097000222", // Dùng mã này để test Bill Nước
     phone: "0912345678",
     email: "binh.tran@example.com",
     address: "45 Lê Lợi, Quận Hải Châu, Đà Nẵng",
@@ -101,7 +93,7 @@ const customers = [
 ];
 
 /* =======================
-   5. ACCOUNTS (KEPT AS IS + OPEN DATE)
+   5. ACCOUNTS
 ======================= */
 const accounts = [
   { account_id: 1, customer_id: 1, account_number: "1111000001", balance: 50_000_000, currency: "VND", open_date: "2022-01-01" },
@@ -143,6 +135,13 @@ const transactions = (() => {
   const txs = [];
   let txId = 1;
 
+  // Helper date function
+  function randomDate() {
+    const m = String(Math.floor(Math.random() * 12) + 1).padStart(2, "0");
+    const d = String(Math.floor(Math.random() * 28) + 1).padStart(2, "0");
+    return `2025-${m}-${d}T10:00:00`;
+  }
+
   const IN_TYPES = ["DEPOSIT", "TRANSFER_IN", "REFUND"];
   const OUT_TYPES = ["PAYMENT", "TRANSFER_OUT", "WITHDRAW"];
 
@@ -154,6 +153,7 @@ const transactions = (() => {
     let totalIn = 0;
     let totalOut = 0;
 
+    // Generate Incoming
     for (let i = 0; i < 50; i++) {
       const amount = i === 49 ? totalInTarget - totalIn : Math.floor(Math.random() * 5_000_000) + 500_000;
       totalIn += amount;
@@ -163,13 +163,14 @@ const transactions = (() => {
         sender_account_id: null,
         receiver_account_id: account.account_id,
         transaction_type: IN_TYPES[Math.floor(Math.random() * IN_TYPES.length)],
-        amount,
+        amount: Math.abs(amount), // Ensure positive
         transaction_time: randomDate(),
-        description: "Receive Money", // Translated
+        description: "Receive Money",
         status: "SUCCESS",
       });
     }
 
+    // Generate Outgoing
     for (let i = 0; i < 50; i++) {
       const amount = i === 49 ? totalOutTarget - totalOut : Math.floor(Math.random() * 3_000_000) + 100_000;
       totalOut += amount;
@@ -179,22 +180,54 @@ const transactions = (() => {
         sender_account_id: account.account_id,
         receiver_account_id: null,
         transaction_type: OUT_TYPES[Math.floor(Math.random() * OUT_TYPES.length)],
-        amount,
+        amount: Math.abs(amount), // Ensure positive
         transaction_time: randomDate(),
-        description: "Payment", // Translated
+        description: "Payment",
         status: "SUCCESS",
       });
     }
   });
 
-  function randomDate() {
-    const m = String(Math.floor(Math.random() * 12) + 1).padStart(2, "0");
-    const d = String(Math.floor(Math.random() * 28) + 1).padStart(2, "0");
-    return `2025-${m}-${d}T10:00:00`;
-  }
-
   return txs.sort((a, b) => new Date(b.transaction_time) - new Date(a.transaction_time));
 })();
+
+/* =======================
+   8. BILL GENERATION (NEW)
+   Hàm này tạo hóa đơn nợ cước cho chức năng PayBill
+======================= */
+export const generateBills = (customerList) => {
+  const bills = [];
+  let billId = 1000;
+  const currentPeriod = "05/2026";
+
+  customerList.forEach((cust) => {
+    // 1. Nguyễn Văn An (ID: 1) -> Nợ Điện & Net
+    if (cust.customer_id === 1) {
+      bills.push({ id: billId++, customer_id: 1, type: 'elec', amount: 1250000, period: currentPeriod });
+      bills.push({ id: billId++, customer_id: 1, type: 'internet', amount: 220000, period: currentPeriod });
+    }
+    
+    // 2. Trần Thị Bình (ID: 2) -> Nợ Nước & Mobile
+    else if (cust.customer_id === 2) {
+      bills.push({ id: billId++, customer_id: 2, type: 'water', amount: 85000, period: currentPeriod });
+      bills.push({ id: billId++, customer_id: 2, type: 'mobile', amount: 450000, period: currentPeriod });
+    }
+    
+    // 3. Lê Văn Cường (ID: 3) -> Nợ Truyền hình cáp
+    else if (cust.customer_id === 3) {
+      bills.push({ id: billId++, customer_id: 3, type: 'tv', amount: 165000, period: currentPeriod });
+    }
+
+    // 4. Các khách còn lại -> Random nợ hoặc không
+    else {
+      if (Math.random() > 0.5) {
+        bills.push({ id: billId++, customer_id: cust.customer_id, type: 'elec', amount: Math.floor(Math.random() * 1000000) + 200000, period: currentPeriod });
+      }
+    }
+  });
+  
+  return bills;
+};
 
 /* =======================
    EXPORT
@@ -207,4 +240,5 @@ export const mockData = {
   accounts,
   loans,
   transactions,
+  // Lưu ý: bills sẽ được tạo động bằng hàm generateBills ở component để cập nhật state
 };

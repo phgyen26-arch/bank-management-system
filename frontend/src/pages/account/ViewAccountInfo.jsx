@@ -41,15 +41,27 @@ const ViewAccountInfo = () => {
       color: '#636e72',
       marginTop: '5px',
     },
+    // --- CHỈNH SỬA LAYOUT TẠI ĐÂY ---
     layout: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))',
-      gap: '40px',
-      alignItems: 'start',
+      display: 'flex',        // Dùng Flexbox để dàn hàng ngang
+      flexWrap: 'wrap',       // Tự xuống dòng nếu màn hình quá nhỏ (mobile)
+      gap: '40px',            // Khoảng cách giữa 2 cột
+      alignItems: 'flex-start', // Căn hàng theo mép trên
     },
+    leftColumn: {
+      flex: '0 0 400px',      // Cột trái (Thẻ) cố định chiều rộng khoảng 400px
+      maxWidth: '100%',       // Để không bị tràn trên mobile
+    },
+    rightColumn: {
+      flex: '1',              // Cột phải (Thông tin) chiếm hết phần còn lại
+      minWidth: '300px',      // Chiều rộng tối thiểu để không bị bóp méo
+    },
+    // --------------------------------
+
     // --- BANK CARD STYLE ---
     cardWrapper: {
       perspective: '1000px',
+      width: '100%', // Đảm bảo thẻ full chiều rộng cột trái
     },
     bankCard: {
       background: 'linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%)',
@@ -59,7 +71,7 @@ const ViewAccountInfo = () => {
       boxShadow: '0 20px 50px rgba(108, 92, 231, 0.3)',
       position: 'relative',
       overflow: 'hidden',
-      minHeight: '220px',
+      minHeight: '240px', // Tăng chiều cao xíu cho đẹp
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
@@ -75,7 +87,7 @@ const ViewAccountInfo = () => {
       border: '1px solid rgba(255,255,255,0.2)'
     },
     cardNumber: {
-      fontSize: '26px',
+      fontSize: '24px', // Giảm xíu để đỡ bị tràn
       letterSpacing: '3px',
       fontFamily: "'Courier New', monospace",
       fontWeight: 'bold',
@@ -83,7 +95,8 @@ const ViewAccountInfo = () => {
       marginBottom: '10px',
       display: 'flex',
       alignItems: 'center',
-      gap: '10px'
+      gap: '10px',
+      flexWrap: 'wrap' // Cho phép xuống dòng nếu số quá dài
     },
     cardBalanceLabel: {
       fontSize: '12px',
@@ -114,6 +127,7 @@ const ViewAccountInfo = () => {
       borderRadius: '24px',
       padding: '30px',
       boxShadow: '0 10px 40px rgba(0,0,0,0.03)',
+      height: '100%', // Để khớp chiều cao nếu cần
     },
     profileHeader: {
         display: 'flex',
@@ -137,6 +151,7 @@ const ViewAccountInfo = () => {
       justifyContent: 'center',
       color: '#636e72',
       marginRight: '15px',
+      flexShrink: 0, // Không bị co lại
     },
     label: {
       fontSize: '13px',
@@ -151,7 +166,6 @@ const ViewAccountInfo = () => {
     }
   };
 
-  // Sử dụng 'vi-VN' để chữ đ nằm sau số (50.000.000 ₫)
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   };
@@ -165,109 +179,113 @@ const ViewAccountInfo = () => {
       </div>
 
       <div style={styles.layout}>
-        {/* LEFT COLUMN: THE "WOW" CARD (Cleaned up) */}
-        <div style={styles.cardWrapper}>
-            {account ? (
-                <div style={styles.bankCard}>
-                    {/* Decorative Background Circles */}
-                    <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '200px', height: '200px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }}></div>
-                    <div style={{ position: 'absolute', bottom: '-30px', left: '-30px', width: '150px', height: '150px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }}></div>
+        
+        {/* LEFT COLUMN: BANK CARD */}
+        <div style={styles.leftColumn}>
+          <div style={styles.cardWrapper}>
+              {account ? (
+                  <div style={styles.bankCard}>
+                      {/* Decorative Background Circles */}
+                      <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '200px', height: '200px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }}></div>
+                      <div style={{ position: 'absolute', bottom: '-30px', left: '-30px', width: '150px', height: '150px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }}></div>
 
-                    {/* Card Top */}
-                    <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <div style={styles.cardChip}></div>
-                            <span style={{ fontSize: '18px', fontWeight: 'bold', fontStyle: 'italic', opacity: 0.9 }}>SecureBank</span>
-                        </div>
-                        
-                        <div style={styles.cardNumber}>
-                            {account.account_number}
-                            <FiCopy 
-                                style={{ cursor: 'pointer', fontSize: '18px', opacity: 0.7 }} 
-                                onClick={() => handleCopy(account.account_number)}
-                                title="Copy Account Number"
-                            />
-                        </div>
-                    </div>
+                      {/* Card Top */}
+                      <div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                              <div style={styles.cardChip}></div>
+                              <span style={{ fontSize: '18px', fontWeight: 'bold', fontStyle: 'italic', opacity: 0.9 }}>SecureBank</span>
+                          </div>
+                          
+                          <div style={styles.cardNumber}>
+                              {account.account_number}
+                              <FiCopy 
+                                  style={{ cursor: 'pointer', fontSize: '18px', opacity: 0.7 }} 
+                                  onClick={() => handleCopy(account.account_number)}
+                                  title="Copy Account Number"
+                              />
+                          </div>
+                      </div>
 
-                    {/* Card Bottom */}
-                    <div>
-                        <span style={styles.cardBalanceLabel}>Available Balance</span>
-                        <h2 style={styles.cardBalance}>{formatCurrency(account.balance)}</h2>
-                        
-                        <div style={styles.cardFooter}>
-                            <div>
-                                <div style={{ fontSize: '10px', opacity: 0.7 }}>CARD HOLDER</div>
-                                <div style={styles.cardHolder}>{customer.full_name}</div>
-                            </div>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: '10px', opacity: 0.7 }}>VALID FROM</div>
-                                <div style={{ fontWeight: '600' }}>{account.open_date}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            ) : (
-                <div style={{...styles.bankCard, background: '#ccc'}}>No Account Found</div>
-            )}
-            
-            {/* Đã xóa phần nút bấm ở đây theo yêu cầu */}
+                      {/* Card Bottom */}
+                      <div>
+                          <span style={styles.cardBalanceLabel}>Available Balance</span>
+                          <h2 style={styles.cardBalance}>{formatCurrency(account.balance)}</h2>
+                          
+                          <div style={styles.cardFooter}>
+                              <div>
+                                  <div style={{ fontSize: '10px', opacity: 0.7 }}>CARD HOLDER</div>
+                                  <div style={styles.cardHolder}>{customer.full_name}</div>
+                              </div>
+                              <div style={{ textAlign: 'right' }}>
+                                  <div style={{ fontSize: '10px', opacity: 0.7 }}>VALID FROM</div>
+                                  <div style={{ fontWeight: '600' }}>{account.open_date}</div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              ) : (
+                  <div style={{...styles.bankCard, background: '#ccc'}}>No Account Found</div>
+              )}
+          </div>
         </div>
 
         {/* RIGHT COLUMN: DETAILED PROFILE */}
-        <div style={styles.profileSection}>
-            <div style={styles.profileHeader}>
-                <h3 style={{ margin: 0, fontSize: '18px', color: '#2d3436' }}>Personal Information</h3>
-            </div>
+        <div style={styles.rightColumn}>
+          <div style={styles.profileSection}>
+              <div style={styles.profileHeader}>
+                  <h3 style={{ margin: 0, fontSize: '18px', color: '#2d3436' }}>Personal Information</h3>
+              </div>
 
-            <div style={styles.row}>
-                <div style={styles.iconBox}><FiUser /></div>
-                <div>
-                    <span style={styles.label}>Full Name</span>
-                    <span style={styles.value}>{customer.full_name}</span>
-                </div>
-            </div>
+              <div style={styles.row}>
+                  <div style={styles.iconBox}><FiUser /></div>
+                  <div>
+                      <span style={styles.label}>Full Name</span>
+                      <span style={styles.value}>{customer.full_name}</span>
+                  </div>
+              </div>
 
-            <div style={styles.row}>
-                <div style={styles.iconBox}><FiCalendar /></div>
-                <div>
-                    <span style={styles.label}>Date of Birth</span>
-                    <span style={styles.value}>{customer.date_of_birth}</span>
-                </div>
-            </div>
+              <div style={styles.row}>
+                  <div style={styles.iconBox}><FiCalendar /></div>
+                  <div>
+                      <span style={styles.label}>Date of Birth</span>
+                      <span style={styles.value}>{customer.date_of_birth}</span>
+                  </div>
+              </div>
 
-            <div style={styles.row}>
-                <div style={styles.iconBox}><FiCreditCard /></div>
-                <div>
-                    <span style={styles.label}>National ID / Citizen ID</span>
-                    <span style={styles.value}>{customer.id_card}</span>
-                </div>
-            </div>
+              <div style={styles.row}>
+                  <div style={styles.iconBox}><FiCreditCard /></div>
+                  <div>
+                      <span style={styles.label}>National ID / Citizen ID</span>
+                      <span style={styles.value}>{customer.id_card}</span>
+                  </div>
+              </div>
 
-             <div style={styles.row}>
-                <div style={styles.iconBox}><FiPhone /></div>
-                <div>
-                    <span style={styles.label}>Phone Number</span>
-                    <span style={styles.value}>{customer.phone}</span>
-                </div>
-            </div>
+               <div style={styles.row}>
+                  <div style={styles.iconBox}><FiPhone /></div>
+                  <div>
+                      <span style={styles.label}>Phone Number</span>
+                      <span style={styles.value}>{customer.phone}</span>
+                  </div>
+              </div>
 
-            <div style={styles.row}>
-                <div style={styles.iconBox}><FiMail /></div>
-                <div>
-                    <span style={styles.label}>Email Address</span>
-                    <span style={styles.value}>{customer.email}</span>
-                </div>
-            </div>
+              <div style={styles.row}>
+                  <div style={styles.iconBox}><FiMail /></div>
+                  <div>
+                      <span style={styles.label}>Email Address</span>
+                      <span style={styles.value}>{customer.email}</span>
+                  </div>
+              </div>
 
-            <div style={styles.row}>
-                <div style={styles.iconBox}><FiMapPin /></div>
-                <div>
-                    <span style={styles.label}>Address</span>
-                    <span style={{...styles.value, lineHeight: '1.4', display: 'block'}}>{customer.address}</span>
-                </div>
-            </div>
+              <div style={styles.row}>
+                  <div style={styles.iconBox}><FiMapPin /></div>
+                  <div>
+                      <span style={styles.label}>Address</span>
+                      <span style={{...styles.value, lineHeight: '1.4', display: 'block'}}>{customer.address}</span>
+                  </div>
+              </div>
+          </div>
         </div>
+
       </div>
     </div>
   );

@@ -1,323 +1,144 @@
-import React, { useState } from "react";
-import { FiSearch, FiDollarSign } from "react-icons/fi";
-import { mockData } from "../../mockdata";
+import React, { useState, useMemo } from "react";
+import { FiSearch, FiDollarSign, FiUser, FiCheckCircle } from "react-icons/fi";
+import { mockData } from "../../mockdata"; // Đảm bảo đường dẫn import đúng
 
 const CashDeposit = () => {
-  /* ================= STATE ================= */
-  const [searchInput, setSearchInput] = useState("");
-  const [customerData, setCustomerData] = useState(null);
+  // --- STATE ---
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [amount, setAmount] = useState("");
-  const [error, setError] = useState("");
 
-  /* ================= LOGIC ================= */
-  const currentBalance = customerData ? customerData.balance : 0;
-  const depositAmount = Number(amount || 0);
-  const newBalance = currentBalance + depositAmount;
+  // --- LOGIC QUAN TRỌNG: GHÉP DATA CUSTOMER VÀ ACCOUNT ---
+  const fullList = useMemo(() => {
+    // Duyệt qua danh sách Customers
+    return mockData.customers.map(cus => {
+      // Tìm Account tương ứng dựa vào customer_id
+      const acc = mockData.accounts.find(a => a.customer_id === cus.customer_id);
+      
+      return {
+        ...cus,
+        // Nếu có tài khoản thì lấy số dư và số TK, nếu không thì để mặc định
+        accountNumber: acc ? acc.account_number : "Chưa có TK",
+        balance: acc ? acc.balance : 0, 
+        avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(cus.full_name)}&background=random&color=fff`
+      };
+    });
+  }, []);
 
-  /* ================= HANDLERS ================= */
-  const handleSearch = () => {
-    if (!searchInput.trim()) return;
+  // Lọc danh sách hiển thị theo từ khóa
+  const filteredList = fullList.filter(item => 
+    item.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.id_card.includes(searchTerm) ||
+    item.phone.includes(searchTerm) ||
+    item.accountNumber.includes(searchTerm)
+  );
 
-    setError("");
-    setCustomerData(null);
-    setAmount("");
-
-    const keyword = searchInput.trim().toLowerCase();
-
-    let foundAccount = mockData.accounts.find(
-      (a) => a.account_number === keyword
-    );
-    let foundCustomer = null;
-
-    if (foundAccount) {
-      foundCustomer = mockData.customers.find(
-        (c) => c.customer_id === foundAccount.customer_id
-      );
-    } else {
-      foundCustomer = mockData.customers.find(
-        (c) =>
-          c.id_card.includes(keyword) ||
-          c.full_name.toLowerCase().includes(keyword) ||
-          c.phone.includes(keyword)
-      );
-      if (foundCustomer) {
-        foundAccount = mockData.accounts.find(
-          (a) => a.customer_id === foundCustomer.customer_id
-        );
-      }
-    }
-
-    if (foundCustomer && foundAccount) {
-      setCustomerData({
-        ...foundCustomer,
-        accountNumber: foundAccount.account_number,
-        balance: foundAccount.balance,
-        avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(
-          foundCustomer.full_name
-        )}&background=random&color=fff`,
-      });
-    } else {
-      setError("Customer or Account not found in system.");
-    }
+  // --- HANDLERS ---
+  const handleSelect = (customer) => {
+    setSelectedCustomer(customer);
+    setAmount(""); // Reset số tiền nhập khi chọn người mới
   };
 
   const handleConfirm = () => {
-    if (!customerData) return;
+    if (!selectedCustomer) return;
+    const depositAmount = Number(amount);
+    
     if (depositAmount <= 0) {
-      alert("Please enter a valid amount!");
-      return;
+        alert("Vui lòng nhập số tiền hợp lệ!");
+        return;
     }
 
-    alert(
-      `Successfully deposited ${depositAmount.toLocaleString()} VND for ${
-        customerData.full_name
-      }`
-    );
-
-    setSearchInput("");
-    setCustomerData(null);
+    // Ở đây chỉ giả lập thông báo, thực tế sẽ gọi API cập nhật lại Database
+    alert(`GIAO DỊCH THÀNH CÔNG!
+    ---------------------------
+    Khách hàng: ${selectedCustomer.full_name}
+    Số tiền nạp: ${depositAmount.toLocaleString()} VND
+    Số dư mới (dự kiến): ${(selectedCustomer.balance + depositAmount).toLocaleString()} VND`);
+    
+    // Reset form
     setAmount("");
+    setSelectedCustomer(null);
   };
 
-  /* ================= STYLES ================= */
-  const styles = {
-    wrapper: {
-      marginLeft: "10px",
-      height: "100vh",          // ✅ FIX SCROLL
-      overflowY: "auto",        // ✅ FIX SCROLL
-      background: "linear-gradient(180deg, #f4f6fb, #eef2f7)",
-      padding: "32px 40px",
-      fontFamily: "'Inter', sans-serif",
-    },
+  // Tính toán hiển thị tức thời
+  const currentBalance = selectedCustomer ? selectedCustomer.balance : 0;
+  const newBalance = currentBalance + Number(amount || 0);
 
-    header: {
-      display: "flex",
-      alignItems: "center",
-      gap: 16,
-      marginBottom: 32,
-      paddingBottom: 20,
-      borderBottom: "1px solid #e5e7eb",
-    },
-    headerIcon: {
-      width: 56,
-      height: 56,
-      borderRadius: 16,
-      background: "linear-gradient(135deg, #0f766e, #16a34a)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      color: "#fff",
-      fontSize: 26,
-    },
-    headerTitle: {
-      fontSize: 26,
-      fontWeight: 700,
-      color: "#0f172a",
-    },
-    headerSub: {
-      fontSize: 14,
-      color: "#64748b",
-      marginTop: 4,
-    },
-
-    card: {
-      background: "#fff",
-      borderRadius: 20,
-      padding: "28px 32px",
-      boxShadow: "0 15px 40px rgba(15,23,42,0.1)",
-      marginBottom: 28,
-    },
-
-    searchRow: {
-      display: "flex",
-      gap: 16,
-    },
-    input: {
-      flex: 1,
-      height: 52,
-      padding: "0 18px",
-      borderRadius: 14,
-      border: "1px solid #e2e8f0",
-      fontSize: 15,
-      outline: "none",
-    },
-    button: {
-      height: 52,
-      padding: "0 28px",
-      borderRadius: 14,
-      border: "none",
-      fontWeight: 600,
-      background: "#0f172a",
-      color: "#fff",
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      gap: 8,
-    },
-
-    customerRow: {
-      display: "flex",
-      alignItems: "center",
-      gap: 24,
-    },
-    avatar: {
-      width: 72,
-      height: 72,
-      borderRadius: "50%",
-      objectFit: "cover",
-    },
-    customerName: {
-      fontSize: 18,
-      fontWeight: 700,
-      color: "#0f172a",
-    },
-    customerMeta: {
-      fontSize: 14,
-      color: "#64748b",
-      marginTop: 4,
-    },
-    balanceBox: {
-      marginLeft: "auto",
-      textAlign: "right",
-    },
-    balanceLabel: {
-      fontSize: 13,
-      color: "#94a3b8",
-    },
-    balanceValue: {
-      fontSize: 22,
-      fontWeight: 700,
-      color: "#1e40af",
-    },
-
-    depositGrid: {
-      display: "grid",
-      gridTemplateColumns: "1.2fr 1fr",
-      gap: 32,
-    },
-    moneyInput: {
-      width: "100%",
-      height: 64,
-      borderRadius: 16,
-      border: "2px solid #e2e8f0",
-      fontSize: 28,
-      fontWeight: 700,
-      padding: "0 20px",
-      color: "#16a34a",
-      outline: "none",
-    },
-
-    summary: {
-      background: "#f8fafc",
-      borderRadius: 16,
-      padding: 24,
-      border: "1px solid #e2e8f0",
-    },
-    summaryRow: {
-      display: "flex",
-      justifyContent: "space-between",
-      marginBottom: 14,
-      fontSize: 15,
-    },
-    summaryHighlight: {
-      fontSize: 18,
-      fontWeight: 700,
-      color: "#16a34a",
-    },
-
-    actionRow: {
-      marginTop: 36,
-      textAlign: "right",
-    },
-    confirmBtn: {
-      height: 56,
-      padding: "0 36px",
-      borderRadius: 16,
-      border: "none",
-      fontSize: 16,
-      fontWeight: 700,
-      background: "linear-gradient(135deg, #16a34a, #22c55e)",
-      color: "#fff",
-      cursor: "pointer",
-      boxShadow: "0 10px 25px rgba(22,163,74,0.4)",
-    },
-    errorMsg: {
-      color: "#ef4444",
-      marginTop: 10,
-      fontSize: 14,
-    },
-  };
-
-  /* ================= RENDER ================= */
   return (
     <div style={styles.wrapper}>
       {/* HEADER */}
       <div style={styles.header}>
-        <div style={styles.headerIcon}>
-          <FiDollarSign />
-        </div>
+        <div style={styles.headerIcon}><FiDollarSign /></div>
         <div>
-          <div style={styles.headerTitle}>Cash Deposit</div>
-          <div style={styles.headerSub}>
-            Teller cash-in transaction (Core Banking)
-          </div>
+          <div style={styles.headerTitle}>Nạp Tiền Mặt (Cash Deposit)</div>
+          <div style={styles.headerSub}>Giao dịch nạp tiền vào tài khoản (Core Banking)</div>
         </div>
       </div>
 
-      {/* SEARCH */}
-      <div style={styles.card}>
-        <div style={styles.searchRow}>
-          <input
-            style={styles.input}
-            placeholder="Enter Account No, ID Card, or Name..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-          />
-          <button style={styles.button} onClick={handleSearch}>
-            <FiSearch /> Search
-          </button>
-        </div>
-        {error && <div style={styles.errorMsg}>{error}</div>}
-      </div>
-
-      {customerData && (
-        <>
-          {/* CUSTOMER INFO */}
-          <div style={styles.card}>
-            <div style={styles.customerRow}>
-              <img
-                src={customerData.avatarUrl}
-                alt="avatar"
-                style={styles.avatar}
-              />
-              <div>
-                <div style={styles.customerName}>
-                  {customerData.full_name}
-                </div>
-                <div style={styles.customerMeta}>
-                  Account No: {customerData.accountNumber}
-                </div>
-                <div style={{ ...styles.customerMeta, fontSize: 13 }}>
-                  ID: {customerData.id_card} • Phone: {customerData.phone}
-                </div>
-              </div>
-              <div style={styles.balanceBox}>
-                <div style={styles.balanceLabel}>Current Balance</div>
-                <div style={styles.balanceValue}>
-                  {currentBalance.toLocaleString()} VND
-                </div>
-              </div>
-            </div>
+      <div style={styles.gridContainer}>
+        
+        {/* --- CỘT TRÁI: DANH SÁCH KHÁCH HÀNG --- */}
+        <div style={styles.leftPanel}>
+          {/* Ô tìm kiếm */}
+          <div style={styles.searchBox}>
+            <FiSearch style={styles.searchIcon} />
+            <input
+              style={styles.searchInput}
+              placeholder="Tìm theo tên, STK, CMND..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
 
-          {/* DEPOSIT */}
-          <div style={styles.card}>
-            <div style={styles.depositGrid}>
-              <div>
-                <div style={{ fontWeight: 600, marginBottom: 12 }}>
-                  Deposit Amount
+          <div style={styles.listHeader}>Kết quả tìm kiếm ({filteredList.length})</div>
+
+          {/* Danh sách cuộn */}
+          <div style={styles.scrollList}>
+            {filteredList.map((item) => (
+              <div 
+                key={item.customer_id} 
+                style={{
+                  ...styles.userItem,
+                  backgroundColor: selectedCustomer?.customer_id === item.customer_id ? '#dcfce7' : 'transparent',
+                  borderLeft: selectedCustomer?.customer_id === item.customer_id ? '4px solid #16a34a' : '4px solid transparent'
+                }}
+                onClick={() => handleSelect(item)}
+              >
+                <img src={item.avatarUrl} alt="" style={styles.avatarSmall} />
+                <div>
+                  <div style={styles.itemName}>{item.full_name}</div>
+                  <div style={styles.itemSub}>{item.accountNumber} • SD: {item.balance.toLocaleString()}</div>
                 </div>
+              </div>
+            ))}
+            
+            {filteredList.length === 0 && (
+              <div style={styles.emptySearch}>Không tìm thấy dữ liệu</div>
+            )}
+          </div>
+        </div>
+
+        {/* --- CỘT PHẢI: FORM NẠP TIỀN --- */}
+        <div style={styles.rightPanel}>
+          {selectedCustomer ? (
+            <>
+              <h3 style={styles.panelTitle}>Thông tin giao dịch</h3>
+              
+              {/* Card thông tin khách được chọn */}
+              <div style={styles.selectedCard}>
+                <div style={styles.cardRow}>
+                  <img src={selectedCustomer.avatarUrl} alt="" style={styles.avatarLarge} />
+                  <div>
+                    <div style={styles.selectedName}>{selectedCustomer.full_name}</div>
+                    <div style={styles.selectedSub}>STK: <b>{selectedCustomer.accountNumber}</b></div>
+                    <div style={styles.selectedSub}>CMND: {selectedCustomer.id_card}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Form nhập tiền */}
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Số tiền nạp (VND)</label>
                 <input
                   style={styles.moneyInput}
                   type="number"
@@ -327,34 +148,137 @@ const CashDeposit = () => {
                 />
               </div>
 
-              <div style={styles.summary}>
+              {/* Tính toán số dư */}
+              <div style={styles.summaryBox}>
                 <div style={styles.summaryRow}>
-                  <span>Current Balance</span>
+                  <span>Số dư hiện tại</span>
                   <span>{currentBalance.toLocaleString()} VND</span>
                 </div>
                 <div style={styles.summaryRow}>
-                  <span>Deposit Amount</span>
-                  <span>{depositAmount.toLocaleString()} VND</span>
+                  <span>Số tiền nạp</span>
+                  <span style={{color: '#16a34a'}}>+ {Number(amount || 0).toLocaleString()} VND</span>
                 </div>
+                <div style={styles.divider}></div>
                 <div style={styles.summaryRow}>
-                  <strong>New Balance</strong>
-                  <strong style={styles.summaryHighlight}>
-                    {newBalance.toLocaleString()} VND
-                  </strong>
+                  <strong>Số dư mới</strong>
+                  <strong style={{fontSize: 18, color: '#16a34a'}}>{newBalance.toLocaleString()} VND</strong>
                 </div>
               </div>
-            </div>
 
-            <div style={styles.actionRow}>
-              <button style={styles.confirmBtn} onClick={handleConfirm}>
-                Confirm Cash Deposit
+              <button style={styles.btnConfirm} onClick={handleConfirm}>
+                <FiCheckCircle style={{marginRight: 8}}/> Xác nhận nạp tiền
               </button>
+            </>
+          ) : (
+            // Màn hình chờ khi chưa chọn khách
+            <div style={styles.placeholderRight}>
+              <div style={styles.placeholderIcon}><FiUser /></div>
+              <p>Vui lòng chọn khách hàng từ danh sách bên trái</p>
             </div>
-          </div>
-        </>
-      )}
+          )}
+        </div>
+
+      </div>
     </div>
   );
+};
+
+// --- STYLES (Giữ nguyên style 2 cột của bạn) ---
+const styles = {
+  wrapper: {
+    height: "100%", 
+    padding: "30px", 
+    background: "#f0fdf4", // Nền xanh lá nhạt
+    fontFamily: "'Segoe UI', sans-serif",
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  header: { display: "flex", alignItems: "center", gap: 16, marginBottom: 20 },
+  headerIcon: {
+    width: 48, height: 48, borderRadius: 12,
+    background: "linear-gradient(135deg, #16a34a, #15803d)", color: "#fff",
+    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24,
+  },
+  headerTitle: { fontSize: 24, fontWeight: 700, color: "#14532d" },
+  headerSub: { fontSize: 14, color: "#166534" },
+
+  gridContainer: { display: 'flex', gap: 24, flex: 1, minHeight: 0, overflow: 'hidden' },
+
+  // CỘT TRÁI
+  leftPanel: {
+    flex: '0 0 350px', 
+    background: '#fff', 
+    borderRadius: 16, 
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', 
+    display: 'flex', 
+    flexDirection: 'column',
+    overflow: 'hidden' 
+  },
+  searchBox: {
+    padding: '20px 20px 10px 20px',
+    display: 'flex', alignItems: 'center', position: 'relative'
+  },
+  searchIcon: { position: 'absolute', left: 35, color: '#9ca3af' },
+  searchInput: {
+    width: '100%', padding: '12px 12px 12px 40px', borderRadius: 10,
+    border: '1px solid #d1d5db', outline: 'none', background: '#f9fafb', fontSize: 14
+  },
+  listHeader: {
+    padding: '0 20px 10px 20px', fontSize: 13, fontWeight: 600, color: '#6b7280', textTransform: 'uppercase'
+  },
+  scrollList: {
+    flex: 1, overflowY: 'auto', padding: '0 10px 10px 10px'
+  },
+  userItem: {
+    display: 'flex', alignItems: 'center', gap: 12, padding: '12px',
+    borderRadius: 8, cursor: 'pointer', transition: '0.2s', marginBottom: 4
+  },
+  avatarSmall: { width: 40, height: 40, borderRadius: '50%' },
+  itemName: { fontSize: 15, fontWeight: 600, color: '#374151' },
+  itemSub: { fontSize: 13, color: '#6b7280' },
+  emptySearch: { textAlign: 'center', marginTop: 20, color: '#9ca3af', fontSize: 14 },
+
+  // CỘT PHẢI
+  rightPanel: {
+    flex: 1, 
+    background: '#fff', 
+    borderRadius: 16, 
+    padding: 30,
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', 
+    display: 'flex', 
+    flexDirection: 'column',
+    overflowY: 'auto'
+  },
+  panelTitle: { fontSize: 18, fontWeight: 700, color: '#374151', marginBottom: 20 },
+  selectedCard: {
+    background: 'linear-gradient(to right, #f0fdf4, #fff)',
+    border: '1px solid #bbf7d0', borderRadius: 12, padding: 20, marginBottom: 24
+  },
+  cardRow: { display: 'flex', alignItems: 'center', gap: 16 },
+  avatarLarge: { width: 64, height: 64, borderRadius: '50%', border: '2px solid #fff', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' },
+  selectedName: { fontSize: 20, fontWeight: 700, color: '#166534' },
+  selectedSub: { fontSize: 14, color: '#15803d' },
+
+  formGroup: { marginBottom: 20 },
+  label: { display: 'block', marginBottom: 8, fontSize: 14, fontWeight: 500, color: '#374151' },
+  moneyInput: {
+    width: '100%', padding: '14px', fontSize: 28, fontWeight: 700, 
+    color: '#16a34a', border: '2px solid #bbf7d0', borderRadius: 10, outline: 'none'
+  },
+  summaryBox: { background: '#f9fafb', padding: 20, borderRadius: 12, marginBottom: 24 },
+  summaryRow: { display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: 14 },
+  divider: { borderTop: '1px solid #e5e7eb', margin: '10px 0' },
+  
+  btnConfirm: {
+    width: '100%', padding: '16px', background: '#16a34a', color: '#fff',
+    border: 'none', borderRadius: 12, fontSize: 16, fontWeight: 600, 
+    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    boxShadow: '0 4px 12px rgba(22, 163, 74, 0.3)'
+  },
+  placeholderRight: {
+    flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#9ca3af'
+  },
+  placeholderIcon: { fontSize: 60, marginBottom: 16, color: '#e5e7eb' }
 };
 
 export default CashDeposit;

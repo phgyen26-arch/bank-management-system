@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { mockData } from '../../mockdata';
-import { FiCheckCircle, FiCreditCard, FiDollarSign, FiArrowRight, FiInfo, FiRefreshCw } from "react-icons/fi";
+import { FiCheckCircle, FiDollarSign, FiRefreshCw, FiCreditCard } from "react-icons/fi";
 
 const RecordLoanPayment = () => {
   const { user } = useAuth();
-  
-  // 1. Khởi tạo state cho danh sách khoản vay từ mockData để UI có thể cập nhật (Re-render)
+
+  // --- 1. DATA LOGIC ---
   const [loans, setLoans] = useState(() => {
     const customer = mockData.customers.find(c => c.user_id === user?.user_id);
     return customer ? mockData.loans.filter(l => l.customer_id === customer.customer_id) : [];
@@ -17,107 +17,179 @@ const RecordLoanPayment = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Lấy khoản vay hiện tại trong state
   const selectedLoan = loans.find(l => l.loan_id.toString() === selectedLoanId.toString());
 
-  // Reset form khi đổi khoản vay
   useEffect(() => {
     setAmount('');
     setIsSuccess(false);
   }, [selectedLoanId]);
 
+  // --- HELPER: CURRENCY FORMATTER (VND) ---
   const formatCurrency = (val) => {
-    if (val === undefined || val === null) return '0 ₫';
-    return new Intl.NumberFormat('vi-VN').format(val) + ' ₫';
+    if (val === undefined || val === null) return '0 VND';
+    return new Intl.NumberFormat('vi-VN').format(val) + ' VND';
   };
 
-  // --- LOGIC CẬP NHẬT DỮ LIỆU ---
   const handlePayment = (e) => {
     e.preventDefault();
-    if (!amount || parseFloat(amount) <= 0) return alert("Vui lòng nhập số tiền hợp lệ");
-    if (parseFloat(amount) > selectedLoan.principal_amount) return alert("Số tiền trả vượt quá dư nợ!");
+    if (!selectedLoan) return;
+    if (!amount || parseFloat(amount) <= 0) return alert("Please enter a valid amount");
+    if (parseFloat(amount) > selectedLoan.principal_amount) return alert("Payment exceeds remaining balance!");
 
     setIsLoading(true);
-
     setTimeout(() => {
-        // 1. Tính toán số dư mới
         const payAmount = parseFloat(amount);
         const newBalance = selectedLoan.principal_amount - payAmount;
         const newStatus = newBalance <= 0 ? 'CLOSED' : selectedLoan.status;
 
-        // 2. Cập nhật vào mockData (Database giả) để các trang khác cũng thấy thay đổi
-        const loanInDB = mockData.loans.find(l => l.loan_id.toString() === selectedLoanId.toString());
-        if (loanInDB) {
-            loanInDB.principal_amount = newBalance;
-            loanInDB.status = newStatus;
-        }
-
-        // 3. Cập nhật State để UI hiện tại thay đổi ngay lập tức
-        setLoans(prevLoans => prevLoans.map(loan => {
-            if (loan.loan_id.toString() === selectedLoanId.toString()) {
-                return { ...loan, principal_amount: newBalance, status: newStatus };
-            }
-            return loan;
-        }));
-
+        setLoans(prev => prev.map(l => l.loan_id.toString() === selectedLoanId.toString() 
+            ? { ...l, principal_amount: newBalance, status: newStatus } 
+            : l
+        ));
         setIsLoading(false);
         setIsSuccess(true);
     }, 1500);
   };
 
-  // --- STYLES ---
+  // --- 2. STYLES (ENHANCED DEPTH & CONTRAST) ---
   const styles = {
-    container: { padding: '40px', maxWidth: '1000px', margin: '0 auto', fontFamily: "'Inter', sans-serif", color: '#2d3436' },
-    header: { marginBottom: '30px' },
-    title: { fontSize: '28px', fontWeight: '800', color: '#2d3436', margin: 0 },
-    subtitle: { color: '#636e72', marginTop: '5px' },
-    grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '40px' },
-    formCard: { backgroundColor: 'white', padding: '30px', borderRadius: '24px', boxShadow: '0 10px 40px rgba(0,0,0,0.03)', border: '1px solid #f1f2f6' },
-    formGroup: { marginBottom: '25px' },
-    label: { display: 'block', marginBottom: '10px', fontWeight: '600', fontSize: '14px', color: '#2d3436' },
-    select: { width: '100%', padding: '15px', borderRadius: '12px', border: '1px solid #dfe6e9', fontSize: '16px', outline: 'none', backgroundColor: '#f9f9f9', cursor: 'pointer' },
-    inputWrapper: { position: 'relative', display: 'flex', alignItems: 'center' },
-    input: { width: '100%', padding: '15px 15px 15px 45px', borderRadius: '12px', border: '1px solid #dfe6e9', fontSize: '18px', fontWeight: 'bold', outline: 'none', color: '#6c5ce7' },
-    inputIcon: { position: 'absolute', left: '15px', color: '#b2bec3' },
-    quickBtnGroup: { display: 'flex', gap: '10px', marginTop: '10px' },
-    quickBtn: { padding: '8px 15px', borderRadius: '20px', border: '1px solid #dfe6e9', background: 'white', fontSize: '12px', cursor: 'pointer', color: '#636e72', transition: 'all 0.2s' },
-    submitBtn: {
-        width: '100%', padding: '18px', marginTop: '20px', borderRadius: '12px', border: 'none',
-        background: 'linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%)',
-        color: 'white', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer',
-        boxShadow: '0 10px 20px rgba(108, 92, 231, 0.2)', transition: 'transform 0.2s'
+    container: { 
+        padding: '40px', 
+        maxWidth: '1100px', 
+        margin: '0 auto', 
+        fontFamily: "'Inter', 'Segoe UI', sans-serif",
+        color: '#1e293b' 
     },
-    summaryCard: { backgroundColor: '#f8f9fa', padding: '30px', borderRadius: '24px', border: '1px solid #dfe6e9', display: 'flex', flexDirection: 'column', justifyContent: 'center' },
-    summaryRow: { display: 'flex', justifyContent: 'space-between', marginBottom: '15px', fontSize: '14px' },
-    summaryLabel: { color: '#636e72' },
-    summaryValue: { fontWeight: '600', color: '#2d3436' },
-    divider: { height: '1px', background: '#dfe6e9', margin: '20px 0' },
-    totalLabel: { fontSize: '16px', fontWeight: 'bold', color: '#2d3436' },
-    totalValue: { fontSize: '20px', fontWeight: '800', color: '#6c5ce7' },
-    successBox: { textAlign: 'center', padding: '40px' },
-    successTitle: { fontSize: '24px', fontWeight: 'bold', color: '#00b894', marginTop: '20px' },
-    successText: { color: '#636e72', margin: '10px 0 30px 0' }
+    header: { marginBottom: '40px', textAlign: 'center' },
+    title: { 
+        fontSize: '36px', 
+        fontWeight: '800', 
+        color: '#0f172a',
+        marginBottom: '10px'
+    },
+    subtitle: { color: '#64748b', fontSize: '16px' },
+
+    // Layout Grid
+    grid: { 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', 
+        gap: '40px',
+        alignItems: 'start'
+    },
+
+    // --- LEFT CARD: ELEVATED FORM ---
+    formCard: { 
+        backgroundColor: '#ffffff', // Pure white
+        padding: '40px', 
+        borderRadius: '24px', 
+        // BÓNG ĐỔ ĐẬM HƠN (Deep Shadow) để tách khỏi nền
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 15px rgba(0,0,0,0.05)', 
+        // VIỀN RÕ RÀNG
+        border: '1px solid #cbd5e1' 
+    },
+    
+    // --- RIGHT CARD: RECEIPT STYLE ---
+    receiptCard: { 
+        backgroundColor: '#ffffff', // White paper look
+        padding: '30px', 
+        borderRadius: '20px', 
+        // Viền nét đứt đậm hơn
+        border: '2px dashed #94a3b8', 
+        // Bóng nhẹ hơn form nhưng vẫn nổi
+        boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.1)'
+    },
+    receiptHeader: {
+        borderBottom: '2px dashed #e2e8f0',
+        paddingBottom: '20px',
+        marginBottom: '20px',
+        textAlign: 'center'
+    },
+
+    // Inputs
+    label: { 
+        display: 'block', marginBottom: '8px', 
+        fontWeight: '700', fontSize: '13px', 
+        color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px'
+    },
+    select: { 
+        width: '100%', padding: '16px', borderRadius: '12px', 
+        border: '2px solid #e2e8f0', // Viền dày hơn
+        fontSize: '16px', fontWeight: '600', color: '#1e293b',
+        backgroundColor: '#fff', cursor: 'pointer',
+        appearance: 'none'
+    },
+    inputWrapper: { position: 'relative', display: 'flex', alignItems: 'center' },
+    input: { 
+        width: '100%', padding: '16px 16px 16px 50px', borderRadius: '12px', 
+        border: '2px solid #e2e8f0', // Viền dày hơn
+        fontSize: '22px', fontWeight: 'bold', 
+        outline: 'none', color: '#2563eb',
+        backgroundColor: '#f8fafc',
+        transition: 'border-color 0.2s'
+    },
+    inputIcon: { position: 'absolute', left: '20px', color: '#64748b' },
+
+    // Buttons
+    submitBtn: {
+        width: '100%', padding: '18px', borderRadius: '14px', border: 'none',
+        background: 'linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)', 
+        color: 'white', fontSize: '16px', fontWeight: '700', cursor: 'pointer',
+        // Bóng màu cho nút
+        boxShadow: '0 10px 25px -5px rgba(37, 99, 235, 0.5)', 
+        transition: 'transform 0.2s', marginTop: '30px'
+    },
+    quickBtnGroup: { display: 'flex', gap: '10px', marginTop: '15px' },
+    quickBtn: { 
+        flex: 1, padding: '12px', borderRadius: '10px', 
+        border: '1px solid #cbd5e1', 
+        background: '#f1f5f9', 
+        fontSize: '13px', fontWeight: '600', 
+        cursor: 'pointer', color: '#475569',
+        transition: 'all 0.2s'
+    },
+
+    // Summary Text
+    row: { display: 'flex', justifyContent: 'space-between', marginBottom: '15px', fontSize: '15px' },
+    rowLabel: { color: '#64748b', fontWeight: '500' },
+    rowValue: { fontWeight: '700', color: '#1e293b' },
+    
+    totalRow: { display: 'flex', justifyContent: 'space-between', marginTop: '20px', paddingTop: '20px', borderTop: '2px dashed #cbd5e1' },
+    totalLabel: { fontSize: '16px', fontWeight: '800', color: '#0f172a' },
+    totalValue: { fontSize: '24px', fontWeight: '900', color: '#2563eb' }, 
+
+    // Success State
+    successBox: { textAlign: 'center', padding: '60px 20px' },
   };
 
-  if (!loans.length) return <div style={{padding:'40px', textAlign:'center'}}>You have no active loans to pay.</div>;
+  if (!loans || loans.length === 0) {
+    return <div style={{padding: 60, textAlign: 'center', color: '#64748b', fontSize: '18px'}}>No active loans found.</div>;
+  }
 
-  // VIEW: SUCCESS
+  // --- VIEW: SUCCESS ---
   if (isSuccess) {
     return (
         <div style={styles.container}>
-            <div style={{...styles.formCard, ...styles.successBox}}>
-                <FiCheckCircle size={80} color="#00b894" />
-                <h2 style={styles.successTitle}>Payment Successful!</h2>
-                <p style={styles.successText}>
-                    You have successfully paid <strong>{formatCurrency(parseFloat(amount))}</strong>. <br/>
-                    The remaining balance for loan #{selectedLoanId} is now <strong>{formatCurrency(selectedLoan.principal_amount)}</strong>.
+            <div style={{...styles.formCard, ...styles.successBox, maxWidth: '600px', margin: '0 auto', borderTop: '6px solid #10b981'}}>
+                <FiCheckCircle size={100} color="#10b981" style={{marginBottom: '20px'}} />
+                <h2 style={{fontSize: '28px', color: '#065f46', marginBottom: '10px'}}>Payment Successful!</h2>
+                <p style={{color: '#64748b', fontSize: '16px', marginBottom: '30px'}}>
+                    Your payment has been successfully recorded.
                 </p>
+                
+                <div style={{background: '#ecfdf5', padding: '20px', borderRadius: '12px', marginBottom: '30px', border: '1px solid #a7f3d0'}}>
+                    <div style={styles.row}>
+                        <span>Paid Amount:</span>
+                        <strong style={{color: '#059669', fontSize: '18px'}}>{formatCurrency(parseFloat(amount))}</strong>
+                    </div>
+                    <div style={styles.row}>
+                        <span>Remaining Balance:</span>
+                        <strong>{formatCurrency(selectedLoan.principal_amount)}</strong>
+                    </div>
+                </div>
+
                 <button 
-                    style={{...styles.submitBtn, width: '220px', background: '#00b894', boxShadow: '0 10px 20px rgba(0, 184, 148, 0.2)'}}
-                    onClick={() => {
-                        setIsSuccess(false);
-                        setAmount(''); // Reset số tiền để nhập lần mới
-                    }}
+                    style={{...styles.submitBtn, background: '#10b981', boxShadow: '0 10px 20px -5px rgba(16, 185, 129, 0.4)'}}
+                    onClick={() => { setIsSuccess(false); setAmount(''); }}
                 >
                     Make Another Payment
                 </button>
@@ -126,59 +198,56 @@ const RecordLoanPayment = () => {
     );
   }
 
-  // VIEW: FORM
+  // --- VIEW: MAIN ---
   const principal = selectedLoan ? selectedLoan.principal_amount : 0;
-  // Tính toán real-time
-  const newBalance = principal - (parseFloat(amount) || 0);
+  const payAmount = parseFloat(amount) || 0;
+  const newBalance = principal - payAmount;
 
   return (
     <div style={styles.container}>
       <div style={styles.header}>
         <h1 style={styles.title}>Loan Repayment</h1>
-        <p style={styles.subtitle}>Securely pay off your loans online</p>
+        <p style={styles.subtitle}>Secure & fast online payment portal</p>
       </div>
 
       <div style={styles.grid}>
         {/* LEFT: FORM */}
         <div style={styles.formCard}>
             <form onSubmit={handlePayment}>
-                {/* Select Loan */}
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Select Loan Contract</label>
-                    <div style={styles.inputWrapper}>
-                        <select 
-                            style={styles.select} 
-                            value={selectedLoanId}
-                            onChange={(e) => setSelectedLoanId(e.target.value)}
-                        >
+                <div style={{marginBottom: '30px'}}>
+                    <label style={styles.label}>1. Select Loan Contract</label>
+                    <div style={{position: 'relative'}}>
+                        <select style={styles.select} value={selectedLoanId} onChange={(e) => setSelectedLoanId(e.target.value)}>
                             {loans.map(loan => (
                                 <option key={loan.loan_id} value={loan.loan_id} disabled={loan.status === 'CLOSED'}>
-                                    {loan.loan_type} - #{loan.loan_id} {loan.status === 'CLOSED' ? '(Paid Off)' : ''}
+                                    {loan.loan_type} — {new Intl.NumberFormat('vi-VN').format(loan.principal_amount)} VND
                                 </option>
                             ))}
                         </select>
+                        <FiCreditCard style={{position: 'absolute', right: 20, top: 18, color: '#64748b'}} />
                     </div>
                 </div>
 
-                {/* Amount Input */}
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Amount to Pay</label>
+                <div style={{marginBottom: '30px'}}>
+                    <label style={styles.label}>2. Enter Payment Amount</label>
                     <div style={styles.inputWrapper}>
-                        <FiDollarSign style={styles.inputIcon} size={20}/>
+                        <FiDollarSign style={styles.inputIcon} size={24}/>
                         <input 
                             type="number" 
                             style={styles.input} 
-                            placeholder="Enter amount"
+                            placeholder="Enter amount..."
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
                             max={principal}
+                            onFocus={(e) => e.target.style.borderColor = '#2563eb'}
+                            onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
                         />
                     </div>
                     {/* Quick Buttons */}
                     <div style={styles.quickBtnGroup}>
-                        <button type="button" style={styles.quickBtn} onClick={() => setAmount(Math.round(principal * 0.1))}>Min (10%)</button>
+                        <button type="button" style={styles.quickBtn} onClick={() => setAmount(Math.round(principal * 0.1))}>10%</button>
                         <button type="button" style={styles.quickBtn} onClick={() => setAmount(Math.round(principal * 0.5))}>50%</button>
-                        <button type="button" style={styles.quickBtn} onClick={() => setAmount(principal)}>Full Amount</button>
+                        <button type="button" style={{...styles.quickBtn, background: '#eff6ff', color: '#2563eb', borderColor: '#bfdbfe'}} onClick={() => setAmount(principal)}>Full Amount</button>
                     </div>
                 </div>
 
@@ -186,47 +255,55 @@ const RecordLoanPayment = () => {
                     type="submit" 
                     style={{
                         ...styles.submitBtn, 
-                        opacity: (isLoading || principal <= 0) ? 0.7 : 1, 
+                        opacity: (isLoading || principal <= 0) ? 0.6 : 1, 
                         cursor: (isLoading || principal <= 0) ? 'not-allowed' : 'pointer',
-                        background: principal <= 0 ? '#b2bec3' : styles.submitBtn.background
                     }}
                     disabled={isLoading || principal <= 0}
                 >
-                    {isLoading ? 'Processing...' : (principal <= 0 ? 'Loan Fully Paid' : 'Confirm Payment')}
+                    {isLoading ? 'Processing...' : `Confirm Payment`}
                 </button>
             </form>
         </div>
 
-        {/* RIGHT: SUMMARY (Cập nhật Real-time) */}
-        <div style={styles.summaryCard}>
-            <div style={{marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px'}}>
-                <FiRefreshCw color="#6c5ce7" className={isLoading ? "spin" : ""} />
-                <span style={{fontWeight: 'bold', fontSize: '18px'}}>Transaction Summary</span>
+        {/* RIGHT: SUMMARY (RECEIPT) */}
+        <div style={styles.receiptCard}>
+            <div style={styles.receiptHeader}>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '5px'}}>
+                    <FiRefreshCw className={isLoading ? "spin" : ""} color="#64748b" />
+                    <h3 style={{margin: 0, fontSize: '18px', color: '#334155'}}>Transaction Summary</h3>
+                </div>
+                <span style={{fontSize: '13px', color: '#94a3b8'}}>Ref: #TXN-{Date.now().toString().slice(-6)}</span>
             </div>
 
-            <div style={styles.summaryRow}>
-                <span style={styles.summaryLabel}>Current Balance</span>
-                <span style={styles.summaryValue}>{formatCurrency(principal)}</span>
+            <div style={styles.row}>
+                <span style={styles.rowLabel}>Current Balance</span>
+                <span style={styles.rowValue}>{formatCurrency(principal)}</span>
             </div>
 
-            <div style={styles.summaryRow}>
-                <span style={styles.summaryLabel}>Payment Amount</span>
-                <span style={{...styles.summaryValue, color: '#00b894'}}>
-                    - {formatCurrency(amount || 0)}
+            <div style={styles.row}>
+                <span style={styles.rowLabel}>Payment Amount</span>
+                <span style={{...styles.rowValue, color: payAmount > 0 ? '#10b981' : '#cbd5e1'}}>
+                    - {formatCurrency(payAmount)}
                 </span>
             </div>
 
-            <div style={styles.divider}></div>
-
-            <div style={styles.summaryRow}>
-                <span style={styles.totalLabel}>Estimated New Balance</span>
-                <div style={{textAlign: 'right'}}>
-                    <span style={styles.totalValue}>{formatCurrency(newBalance > 0 ? newBalance : 0)}</span>
-                    {newBalance <= 0 && amount > 0 && (
-                        <div style={{fontSize: '11px', color: '#00b894', marginTop: '5px', fontWeight: 'bold'}}>✨ Fully Paid! Good job!</div>
-                    )}
-                </div>
+            {/* Estimated New Balance */}
+            <div style={styles.totalRow}>
+                <span style={styles.totalLabel}>Est. New Balance</span>
             </div>
+            <div style={{textAlign: 'right'}}>
+                 <span style={styles.totalValue}>{formatCurrency(newBalance > 0 ? newBalance : 0)}</span>
+            </div>
+
+            {newBalance <= 0 && payAmount > 0 && (
+                 <div style={{marginTop: '20px', padding: '12px', background: '#dcfce7', color: '#166534', borderRadius: '10px', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center'}}>
+                    <FiCheckCircle />
+                    Great! You will be debt-free.
+                 </div>
+            )}
+            
+            {/* Decoration: Paper cut effect at bottom */}
+            <div style={{position: 'absolute', bottom: -10, left: 0, width: '100%', height: '10px', background: 'radial-gradient(circle, transparent 60%, #ffffff 60%)', backgroundSize: '20px 20px', transform: 'rotate(180deg)'}}></div>
         </div>
       </div>
     </div>
